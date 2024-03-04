@@ -439,7 +439,7 @@ In particular, \fast has a higher $\Delta$E discriminability metric.
 As measured by CCC-Tool~\cite{Nardini2021}, \coolwarm has an average local CIE$\Delta$E2000 discriminability score of 120 whereas \fast has a score of 174. Other discriminability metrics similarly show improvements with \fast.
 All that said, we recognize that \fast%
 %, shown in Figure \ref{Larsen3},
-likely performs less well in general than the \blueorange colormap it is based on as \blueorange includes a larger luminence range, being darker on the ends and going to white in the center.
+likely performs less well with respect to discriminability than the \blueorange colormap it is based on as \blueorange includes a larger luminence range, being darker on the ends and going to white in the center.
 These changes were necessary in order to adjust for the smoothness and robustness to shading on 3D surfaces.
 
 The \coolwarm colormap was designed about 15 years ago to move away from the \huewheel colormap and its rainbow colors because of the strong evidence at the time of its poor perceptual properties~\cite{Rogowitz1998,Borland2007,Ware1988,Light2004}.
@@ -473,10 +473,10 @@ Revisiting the criteria presented at the beginning of this paper, evaluations an
 
 \begin{itemize}
 
-\item \emph{Discriminative powers} --
+\item \emph{Discriminative power} --
   \fast performs better on every color discriminability metric that we have available.
 \item \emph{Uniformity} --
-  The previous \coolwarm colormap has very little luminance change in its center leaving a region of colors that tend to get washed out (see Figure \ref{Larsen3}).
+  The previous \coolwarm colormap has very little luminance change in its center leaving a region of colors that tend to get washed out (see Figures \ref{Larsen3} and \ref{fig:Matrix}).
   \fast retains more luminance variation at its apex to help maintain a uniform perceptual change in that region.
 \item \emph{Smoothness} --
   \fast sacrifices some smoothness at the center for gain in discrimination and uniformity, but the smoothness is close to \coolwarm and much better than \blueorange.
