@@ -25,6 +25,7 @@
 \usepackage{color}
 \newcommand*{\fix}[1]{\textbf{\emph{\textcolor{red}{#1}}}}
 
+\usepackage{paralist}
 \usepackage{subcaption}
 
 \usepackage{xspace}
@@ -175,9 +176,18 @@ It illustrates the uneven contrast distribution of \huewheel, the more consisten
 \end{figure*}
 
 Artistic Color Contrast Theory, used and demonstrated in paintings since the Renaissance, identifies seven types of color contrast~\cite{Itten}.
-The first three are contrast of hue, saturation, and luminance, which are familiar as they align with parameters of HSL and other color spaces.
-Two more are the cool-warm contrast and complimentary contrast, both of which involve colors on opposite sides of the color wheel.
-The remaining two are simultaneous contrast at play in the \huewheel colormap and contrast of extension, which speaks to balance of the area covered by specific hues.
+The first three are
+\begin{inparaenum}[(1)]
+\item contrast of hue,
+\item contrast of saturation, and
+\item contrast of luminance, which are familiar as they align with parameters of HSL and other color spaces.
+Two more are
+\item cool-warm contrast and
+\item complimentary contrast, both of which involve colors on opposite sides of the color wheel.
+The remaining two are
+\item simultaneous contrast at play in the \huewheel colormap and
+\item contrast of extension, which speaks to balance of the area covered by specific hues.
+\end{inparaenum}
 
 Colormaps with high discriminatory power employ multiple types of contrast across the map.
 Looking at Figure~\ref{Larsen3}, \huewheel relies on hue and simultaneous contrast, \coolwarm narrows the hue range but gains contrast by adding two cropped luminance ranges.
@@ -215,13 +225,6 @@ Future work includes addressing this trade-off by an automating the rescaling on
 %It is worth noting that colormaps with larger numbers of control points are able to attain greater discriminatory power due to the greater control of hues sequences. However, here we have limited the number of control points as they make it difficult to adjust the hue distribution to meet the needs of your data while maintaining the even progression of contrast distribution. 
 
 \begin{figure}[t]
-\includegraphics[width=\columnwidth]{Final_Pics/30F_combo.png}
-\centering
-\caption{CCC-Tool's colormap construction interface showing the control points of \fast \cite{Nardini2021}. Top to bottom: HSL control points; LAB control points and the optimization function we used to determine the level of local discriminatory power.}
-\label{CCC1}
-\end{figure}
-
-\begin{figure}[htb]
   \begin{subfigure}{\linewidth}
     \includegraphics[width=\linewidth]{map-cool-to-warm}
     \vspace{-1.4\baselineskip}
@@ -259,12 +262,19 @@ This collaboration engendered the \blueorange colormap (Figure~\ref{fig:design:b
 This colormap is built on the same principles as the \coolwarm colormap (Figure~\ref{fig:design:coolwarm}) but expanded the internal contrast incorporating longer paths through hue, saturation, and luminance, a principal well documented for increasing internal contrast \cite{Ware2023}.  
 
 
+\begin{figure}[t]
+\includegraphics[width=\columnwidth]{Final_Pics/30F_combo.png}
+\centering
+\caption{CCC-Tool's colormap construction interface showing the control points of \fast. Top to bottom: HSL control points; LAB control points and the optimization function we used to determine the level of local discriminatory power.}
+\label{CCC1}
+\end{figure}
+
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{Final_Pics/Compare22.png}
   \caption{
-    Iterative design from the \blueorange colormap, left, to our final design of \fast (E).
-    The impact of each iteration is demonstrated on two types of data: streamlines of wind from a fire simulation (LANL), and volumetric data of smoke from the same fire simulation.}
+    Iterative design from the \blueorange colormap (left) to our final design of \fast (right).
+    The impact of each iteration is demonstrated on two types of data: streamlines of wind from a fire simulation, and volumetric data of smoke from the same fire simulation.}
 \label{fig:iterations}
 \end{figure*}
 
@@ -272,7 +282,12 @@ This colormap is built on the same principles as the \coolwarm colormap (Figure~
 The \blueorange colormap improves on the discriminating power of \coolwarm by increasing the range of all available color channels without violating robustness to colorblindness.
 First, the brightness range is expanded by dropping the brightness at each end.
 This increases the luminance profile, which is known to be the most powerful channel for visual discrimination, particularly for high-frequency data \cite{Ware2019}.
-The hue range is also expanded by: mixing green into the light cool colors; yellow and orange into to light warm range; and moving the darker colors toward purple and maroon.
+The hue range is also expanded by
+\begin{inparaenum}[(1)]
+\item mixing green into the light cool colors,
+\item mixing yellow and orange into to light warm range, and
+\item moving the darker colors toward purple and maroon.
+\end{inparaenum}
 The saturation is also significantly increased across the color map to bring more vibrancy and to more clearly distinguish between the hues.
 User studies like that in Figure~\ref{Ware}
 show the \blueorange colormap to be better than the original \coolwarm colormap and overall one of the best performing colormaps \cite{Ware2017,Ware2019,Turton2017}.
@@ -285,16 +300,23 @@ However, the \blueorange colormap design comes from a particular collaboration w
 Because it was created with a narrow focus of customers, it has some characteristics that make it unsuitable for more general application.
 
 
-Colormap construction is an iterative process. We moved through over 50 versions to arrive at \fast. Figure~\ref{CCC1} contains the CCC-Tool interfaces used in the process of iteration: adjusting the control points in HSV (top); comparing the HSV coordinates to the control point graph in LAB space (middle); checking for equal and smooth distributions of the hues; and turning to the Optimization tab to check the local speed and contrast distribution (bottom). A change in one section of the map often impacts another, driving the need for another iteration.
+
+Colormap construction is an iterative process.
+We moved through over 50 versions to arrive at \fast.
+Figure~\ref{CCC1} contains the CCC-Tool interfaces~\cite{Nardini2021} used in the process of iteration.
+This tool simplifies many processes involved in building colormaps including adjusting the control points in HSV (top), comparing the HSV coordinates to the control point graph in LAB space (middle), checking for equal and smooth distributions of the hues, and turning to the Optimization tab to check the local speed and contrast distribution (bottom).
+A change in one section of the map often impacts another, driving the need for another iteration.
 %in which the  section of CCC-Tool and by comparing the HSV space control points which enable manipulation according to artistic color theory and LAB space, examining the plots for smoothness. Then the map is applied to four data sets: points, streamlines, volumetric data and a combination.
 
 
 
-\textbf{Ken, I think this is redundant but take a look.}
+%\textbf{Ken, I think this is redundant but take a look.}
+%\fix{Agreed. This does feel repetative.}
 %Figure~\ref{CCC1} shows the control points of \fast in the CCC-Tool\cite{Nardini2021} interface. We start by selecting and adjusting the control points in HSV space (left) as there the hues are intuitively adjustable. Once we are close to a the desired colormap, its control points are reviewed in CIElab (middle) which is useful for tuning the perceptual consistency of the map. In order to check the strength and distribution of the discriminatory power we review in the optimization metrics (bottom) section.
 
 
-Implementing the \textit{Criteria} exposes the inherent linkage and impacts. For example increasing smoothness decreases feature resolution but is important for minimizing artifacts. The iterative process involves balancing the smoothness, equal distribution of luminance, smooth hue transitions, as well as identify a path through turquoise and fuchsia, awkward transitions in digital colorspace. Like yellow, in their pure form they are lighter crisp. When darkened, they quickly become muddy, obscuring the hue.
+%\fix{This paragraph also sounds repetative and it feels very awkwardly phrased. I think it will be more clear to just jump into the description of the \blueorange edits.}
+%Implementing the \textit{Criteria} exposes the inherent linkage and impacts. For example increasing smoothness decreases feature resolution but is important for minimizing artifacts. The iterative process involves balancing the smoothness, equal distribution of luminance, smooth hue transitions, as well as identify a path through turquoise and fuchsia, awkward transitions in digital colorspace. Like yellow, in their pure form they are lighter crisp. When darkened, they quickly become muddy, obscuring the hue.
 
 
 %\begin{figure}[htb]
@@ -324,12 +346,17 @@ Implementing the \textit{Criteria} exposes the inherent linkage and impacts. For
 %\end{figure*}
 
 
-Figure~\ref{fig:CFCC1} illustrates the process of modifying colormaps.  
+%Figure~\ref{fig:CCC1} illustrates the process of modifying colormaps.  
 
 
-In Figure~\ref{fig:iterations}, on the left, \blueorange, illustrates the strong white focal point %generated by the low saturation level. It is illustrated on data in Figure~\ref{fig:iterations}.
-While valuable for designating the middle point of the data, it is imperfect for general data and violates the smoothness characteristic we desire.
-To correct for this, we lowered the luminance at that point and raised the saturation slightly, center.  \fast, on the right, is the compromise. Ideally we would make a perfectly smooth transition in the center but this lowers the discrimination power in the mid-section. The values on the end section are a compromise between discriminatory power and clarity when shadows are present. The exchanges are further detailed in Figure\ref{Matrix}.
+\blueorange, produces a strong white focal point in its center as demonstrated in Figure~\ref{fig:iterations}, on the left. %generated by the low saturation level.
+It is illustrated on data in Figure~\ref{fig:iterations}.
+Although valuable for designating the middle point of the data, it is imperfect for general data and violates the smoothness characteristic we desire.
+To correct for this, we lowered the luminance at that point and raised the saturation slightly as shown in the center of Figure~\ref{fig:iterations}.
+\fast, on the right, is the compromise.
+Ideally we would make a perfectly smooth transition in the center but this lowers the discrimination power in the mid-section.
+The values on the end section are a compromise between discriminatory power and clarity when shadows are present.
+The exchanges are further detailed in Figure~\ref{fig:Matrix}.
 
 
 
@@ -342,7 +369,7 @@ To correct for this, we lowered the luminance at that point and raised the satur
 %Figure~\ref{fig:iterations} renders these maps on data, documenting the changes and illustrating 
 %the impact.
 
-These maps were evaluated using $\Delta$E discriminability metric in CCC-Tool shown in the bottom panel of Figure~\ref{CCC1}. Figure \ref{fig:iterations} shows the application of these candidate colormaps on streamlines (top) and volumetric data (bottom).
+These maps were evaluated using the $\Delta$E discriminability metric in CCC-Tool shown in the bottom panel of Figure~\ref{CCC1}. Figure \ref{fig:iterations} shows the application of these candidate colormaps on streamlines (top) and volumetric data (bottom).
 Starting on the left, one can see that \blueorange produces saturated, detailed renderings with a clear delineation between the cool and warm sections.
 The first goal was to lower the center focal point and equalize the uniformity of the transitions.
 
@@ -350,25 +377,18 @@ The first goal was to lower the center focal point and equalize the uniformity o
 \centering
 \includegraphics[width=\textwidth]{Final_Pics/TheMatrix.png}
 \caption{Left to right are five datasets: ocean kinetic energy; wildfire wind; magnetic reconnection; combustion simulation; wildfire smoke. They are organized by the data characteristics: the two left columns contain data spanning the full range, relatively evenly; the middle column is noisy data that spans the full range but is concentrated in the mid-range; the right two columns contain data concentrated on the low end, 2D and 3D, in column four and five respectively. }
-\label{Matrix}
+\label{fig:Matrix}
 \end{figure*}
 
 
 Next, we sought to further smooth the center range as well as experiment with lightening the end values to address the shading concerns.
-We also added a yellow tint to the center values to prevent bright colors from blending into white backgrounds, Both changes are shown in Figure~\ref{fig:iterations}. 
+We also added a yellow tint to the center values to prevent bright colors from blending into white backgrounds.
+Both changes are shown in the middle of Figure~\ref{fig:iterations}. 
 
 
-However, the discriminatory power of this colormap was significantly compromised from these previous changes. We tried increasing the saturation across the colormap and extending the warm hues toward purple. Here the transition toward fushsia became problematic. To compensate, we increased the saturation again, removed the purple and shifted the turquoise region toward the center to provide the needed discrimination, resulting in the final \fast colormap shown on the right.
+However, the discriminatory power of this colormap was significantly compromised from these previous changes. We tried increasing the saturation across the colormap and extending the warm hues toward purple. Here the transition toward fushsia became problematic. To compensate, we increased the saturation again, removed the purple and shifted the turquoise region toward the center to provide the needed discrimination, resulting in the final \fast colormap shown on the right of Figure~\ref{fig:iterations}.
 
 These candidate colormaps manifest different balances of our criteria: the luminance range to balance discriminability and 3D shading; different luminance adjustments at the center point to balance uniformity and smoothness; and different hue ranges to balance discriminability and order. 
-
-
-Finally, a sequence of control points was chosen for a piece wise-linear interpolation of colors in CIELAB space with a preference to minimize their number.
-In practice, users sometimes wish to modify a colormap to their purpose.
-For example, users may wish to adjust the colors to highlight particular regions of their scalar data.
-This cannot be done easily with larger numbers of control points, so we removed any control points where interpolation produces nearly identical results.
-Our final design has nine control points as it is the minimum needed to produce a smoothly transitioning map that moves through the hues we have selected.
-
 
 
 %%\centering
@@ -377,7 +397,28 @@ Our final design has nine control points as it is the minimum needed to produce 
 % \label{fig:3d-shading}
 %\end{figure*}
 
-Colormaps for 3D surfaces have an added complexity. Shadows define 3D forms. In the process they disrupt our ability to accurately identify the value encoded by the colormap. Figure~\ref{fig:Matrix}, right column, illustrates the issues. In the mid-value range of the colormap they shift the value but do not disrupt our ability to see the forms. In the low and high ends of the colormap, where the hues are the dark, shadows can prevent us from seeing the shape altogether. \coolwarm addresses this issue by not including darker range of blues and reds but it does so at a cost of lowering the discriminatory power. Given that luminance is the most powerful contrast type, the sacrifice is significant. \fast employs a wider span of the value range than \coolwarm but less than \extendedcoolwarm. Figure~\ref{Ware} details the impact on the discriminatory power. The right column in Figure~\ref{fig:Matrix} illustrates the interference of shadows and hue values in \coolwarm and \fast. In the \coolwarm the 3D forms are clearer than but in visualizations showing the full range of the data, detail is lost.  When using \fast, one can add a default light under the light inspector function, requiring only a box check, a much easier task than trying to increase the internal luminance range as that would require adding and adjusting individual control points.
+Colormaps for 3D surfaces have an added complexity.
+3D forms are principally defined by shading, but the brightness of a colormap can interfere with the interpretation of shading.
+%Figure~\ref{fig:Matrix}, right column, illustrates the issue.
+%In the mid-value range of the colormap they shift the value but do not disrupt our ability to see the forms.
+%In the low and high ends of the colormap, where the hues are the dark, shadows can prevent us from seeing the shape altogether.
+%Given that luminance is the most powerful contrast type, the sacrifice is significant.
+%Figure~\ref{Ware} details the impact on the discriminatory power.
+The right column in Figure~\ref{fig:Matrix} illustrates the interference of shading and colors in \coolwarm, \blueorange, \fast, and other colormaps.
+\coolwarm, second row, addresses this issue by not including darker blues and reds, but it does so at a cost of lowering the discriminatory power.
+%In the \coolwarm the 3D forms are clearer than but in visualizations showing the full range of the data, detail is lost.
+In contrast, the \extendedcoolwarm and \blueorange colormaps, third and fourth rows, have colors dark enough to completely hide the shape of objects they are applied to.
+As a compromise, \fast employs a wider span of the luminance range than \coolwarm but less than \extendedcoolwarm or \blueorange.
+%When using \fast, one can add a default light under the light inspector function, requiring only a box check, a much easier task than trying to increase the internal luminance range as that would require adding and adjusting individual control points.
+
+
+Finally, a sequence of control points was chosen for a piecewise-linear interpolation of colors in CIELAB space with a preference to minimize their number.
+In practice, users sometimes wish to modify a colormap to their purpose.
+For example, users may wish to adjust the colors to highlight particular regions of their scalar data.
+This cannot be done easily with larger numbers of control points, so we removed any control points where interpolation produces nearly identical results.
+Our final design has nine control points as it is the minimum needed to produce a smoothly transitioning map that moves through the hues we have selected.
+
+
  
 \section{USER FEEDBACK}
 
@@ -420,7 +461,7 @@ Thus, we are not ready to loop back around to the full hues of a rainbow.
 Our final iteration of the new colormap, which we dub ``\fast,'' is demonstrated in Figure~\ref{Larsen3} as well as numerous other figures in this paper.
 This colormap is provided as one of the available colormaps in ParaView~5.12 and will become the default colormap in ParaView~5.13.
 
-Revisiting the criteria presented at the beginning of this paper, evaluations and user feedback show the advantages of \fast over \coolwarm and other standard defaults. Figure~\ref{Matrix} provides comparisons of the criteria across five data sets.
+Revisiting the criteria presented at the beginning of this paper, evaluations and user feedback show the advantages of \fast over \coolwarm and other standard defaults. Figure~\ref{fig:Matrix} provides comparisons of the criteria across five data sets.
 
 
 %\begin{figure}
@@ -443,7 +484,7 @@ Revisiting the criteria presented at the beginning of this paper, evaluations an
   \coolwarm and \fast use the same cues of luminance and warmth for color order.
 \item \emph{Robustness to shading on 3D surfaces} --
   \fast allows the end colors to become darker for greater discriminability.
-  This makes shapes a bit harder but still possible to discern in the worst case scenario of values all at one end of the colormap range (see Figure~\ref{Matrix}, right column).
+  This makes shapes a bit harder but still possible to discern in the worst case scenario of values all at one end of the colormap range (see Figure~\ref{fig:Matrix}, right column).
 \item \emph{Robustness to colorblindness} --
   Colorblindness was always kept in mind when designing \fast.
   Figure~\ref{fig:colorblindness} shows that \fast responds just as well to common forms of colorblindness as does \coolwarm.
