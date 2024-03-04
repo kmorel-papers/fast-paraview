@@ -106,37 +106,6 @@ Consequently, the ParaView development team has been motivated to revisit its de
 This paper describes the processes we undertook to design a new default colormap for ParaView, which we dub ``\fast'', shown on the right side of Figure~\ref{Larsen3}.
 We describe the criteria we used in designing this colormap: the iterative design process; refining the hue selection; smoothing the transitions; distributing the final colormap to get feedback from current users; evaluation using perceptual models; and making the final refinements.
 
-\begin{figure}[htb]
-  \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{map-cool-to-warm}
-    \vspace{-1.4\baselineskip}
-    \caption{Original \coolwarm coolwarm.}
-    \label{fig:design:coolwarm}
-  \end{subfigure}\\[4pt]
-  \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{Final_Pics/CW_extended.png}
-    \vspace{-1.4\baselineskip}
-    \caption{\textit{Cool Warm Extended} colormap.}
-    \label{fig:design:cw est}
-  \end{subfigure}\\[4pt]
-  \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{map-blue-orange-diverging}
-    \vspace{-1.4\baselineskip}
-    \caption{\blueorange colormap.}
-    \label{fig:design:blueorange}
-  \end{subfigure}\\[4pt]
-  \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{map-fast}
-    \vspace{-1.4\baselineskip}
-    \caption{Final \fast colormap.}
-    \label{fig:design:fast}
-  \end{subfigure}
-  \caption{
-    Transition of the default ParaView color map from the original (top) variations designed to improve discriminatory power to the new default (bottom) colormap.
-  }
-  \label{fig:designs}
-\end{figure}
-
 
 \section{CRITERIA}
 
@@ -155,7 +124,8 @@ There are many guidelines for colormaps proposed in the literature. We use the c
   The color sequence should have an easy to intuit, or at least easy to remember, progression from low to high values.
   The colors should follow natural interpretations and accepted conventions where possible.
 \item \emph{Robustness to shading on 3D surfaces} -- Shading, which darkens a surface based on its orientation with respect to the light source and viewer, is vital in perceiving shape.
-  If a surface is painted with overly dark colors, the shading becomes indiscernible as can be seen in Figure~\ref{fig:3d-shading}.
+  If a surface is painted with overly dark colors, the shading becomes indiscernible.
+  %as can be seen in Figure~\ref{fig:3d-shading}.
 \item \emph{Robustness to colorblindness} --
   The colors should be distinguishable for the many users with various types and degrees of colorblindness.
 \item \emph{Aesthetically pleasing} --
@@ -170,15 +140,21 @@ The Color Theory section below details relevant artistic color theory illuminate
 
 
 \section {COLORMAPS \& COLOR THEORY}
+
 Colormaps come in a wide variety, categorized loosely by their luminance distribution and number  of ramps. 
 %and designed to address different visualization tasks, data distributions as well as the needs and conventions of the science domain. 
-General categories include: discrete, linear, divergent, discrete, isoluminent and more custom constructions such as wave maps. Discrete colormaps contain specific hues without interpolation between hues. Linear maps, colormaps that span one value ramp, enable intuitive identification of scalar values and equalized attention across the visualization but contain lower discriminatory power due to the single value ramp and a narrow range of hues. Divergent maps are colormaps that contain two abutting value ramps which provides addition discriminatory power. \coolwarm, \textit{Blue=Orange divergent} and \fast are all examples of divergent maps. Isolumient colormaps hold advantages for specific uses but suffer from low discriminatory power as by definition they seek to limit the luminance range as shown in Figure~\ref{Ware}.
+General categories include discrete, linear, diverging, isoluminent, and more custom constructions such as wave maps.
+Discrete colormaps contain specific hues without interpolation between hues.
+Linear maps, colormaps that span one value ramp, enable intuitive identification of scalar values and equalized attention across the visualization but contain lower discriminatory power due to the monotonic luminance profile ramp and a narrow range of hues.
+Diverging maps are colormaps that contain two abutting value ramps, which provides addition discriminatory power.
+\coolwarm, \blueorange, and \fast are all examples of diverging maps.
+Isolumient colormaps hold advantages for specific uses but suffer from low discriminatory power as by definition they seek to limit the luminance range as shown in Figure~\ref{Ware}.
 
 It is helpful to understand a bit about artistic color theory \cite{Itten} as a base for our discussion. Colormaps translate data, not through the colors themselves, but the \textit{contrast} between the perceivable hues. In discrete colormaps it is the contrast between the individual hues. Scalar colormaps include the interpolation between the hue control points to create a smooth ramp across the map. Discriminatory power is generated by the contrast of these interpolated hues, thus their selection requires careful consideration and evaluation.
 
 \begin{figure}
 \includegraphics[width=\linewidth]{pics/Ware17.png}
-\caption{This chart by Ware et al \cite{Ware2019} illustrates the discriminatory at points across the colormap. The abbreviations, left to right: R - \huewheel; CW - \coolwarm; ECW - \textit{Extended Cool Warm}; BOD = \blueorange; VI - \textit{viridis}; G2 - \textit{grayscale}; GR - \textit{green-red}. }
+\caption{This chart by Ware et al. \cite{Ware2019} illustrates the discriminatory at points across the colormap. The abbreviations, left to right: RA - \huewheel; CW - \coolwarm; ECW - \colormap{Extended Cool Warm}; BOD = \blueorange; VI - \textit{Viridis}; G2 - \textit{Grayscale}; GR - \textit{Green-Red}. }
 \label{Ware}
 \end{figure}
 
@@ -222,6 +198,37 @@ The most common request we receive from scientists is higher feature resolution,
 \centering
 \caption{CCC-Tool's colormap construction interface showing the control points of \fast \cite{Nardini2021}. Top to bottom: HSL control points; LAB control points and the optimization function we used to determine the level of local discriminatory power.}
 \label{CCC1}
+\end{figure}
+
+\begin{figure}[htb]
+  \begin{subfigure}{\linewidth}
+    \includegraphics[width=\linewidth]{map-cool-to-warm}
+    \vspace{-1.4\baselineskip}
+    \caption{Original \coolwarm coolwarm.}
+    \label{fig:design:coolwarm}
+  \end{subfigure}\\[4pt]
+  \begin{subfigure}{\linewidth}
+    \includegraphics[width=\linewidth]{Final_Pics/CW_extended.png}
+    \vspace{-1.4\baselineskip}
+    \caption{\textit{Cool Warm Extended} colormap.}
+    \label{fig:design:cw est}
+  \end{subfigure}\\[4pt]
+  \begin{subfigure}{\linewidth}
+    \includegraphics[width=\linewidth]{map-blue-orange-diverging}
+    \vspace{-1.4\baselineskip}
+    \caption{\blueorange colormap.}
+    \label{fig:design:blueorange}
+  \end{subfigure}\\[4pt]
+  \begin{subfigure}{\linewidth}
+    \includegraphics[width=\linewidth]{map-fast}
+    \vspace{-1.4\baselineskip}
+    \caption{Final \fast colormap.}
+    \label{fig:design:fast}
+  \end{subfigure}
+  \caption{
+    Transition of the default ParaView color map from the original (top) variations designed to improve discriminatory power to the new default (bottom) colormap.
+  }
+  \label{fig:designs}
 \end{figure}
 
 \section{CONSTRUCTING A NEW DEFAULT}
