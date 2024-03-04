@@ -6,5 +6,5 @@ include(UseLATEX.cmake)
 
 add_latex_document(Fast_ParaView.tex
   BIBFILES Fast_ParaView.bib
-  IMAGE_DIRS pics
+  IMAGE_DIRS pics Final_Pics
   )
