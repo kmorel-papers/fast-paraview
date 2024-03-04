@@ -349,7 +349,7 @@ Our final design has nine control points as it is the minimum needed to produce 
 % \label{fig:3d-shading}
 %\end{figure*}
 
- Colormaps for 3D surfaces have an added complexity. Shadows define 3D forms. In the process they disrupt our ability to accurately identify the value encoded by the colormap. Figure~\ref{fig:Matrix}, right column, illustrates the issues. In the mid-value range of the colormap they shift the value but do not disrupt our ability to see the forms. In the low and high ends of the colormap, where the hues are the dark, shadows can prevent us from seeing the shape altogether. \coolwarm addresses this issue by not including darker range of blues and reds but it does so at a cost of lowering the discriminatory power. Given that luminance is the most powerful contrast type, the sacrifice is significant. \fast employs about 70 percent of the value range, more than \coolwarm but less than \textit{Extended Cool Warm}. Figure~\ref{Ware} details the impact on the discriminatory power. The right column in Figure~\ref{fig:Matrix} illustrates the interference of shadows and hue values in \coolwarm and \fast. In the \coolwarm the 3D forms are clearer than but in visualizations showing the full range of the data, detail is lost.  When using \fast, one can add a default light under the light inspector function, requiring only a box check, a much easier task than trying to increase the internal luminance range as that would require adding and adjusting individual control points.
+ Colormaps for 3D surfaces have an added complexity. Shadows define 3D forms. In the process they disrupt our ability to accurately identify the value encoded by the colormap. Figure~\ref{fig:Matrix}, right column, illustrates the issues. In the mid-value range of the colormap they shift the value but do not disrupt our ability to see the forms. In the low and high ends of the colormap, where the hues are the dark, shadows can prevent us from seeing the shape altogether. \coolwarm addresses this issue by not including darker range of blues and reds but it does so at a cost of lowering the discriminatory power. Given that luminance is the most powerful contrast type, the sacrifice is significant. \fast employs a wider span of the value range than \coolwarm but less than \textit{Extended Cool Warm}. Figure~\ref{Ware} details the impact on the discriminatory power. The right column in Figure~\ref{fig:Matrix} illustrates the interference of shadows and hue values in \coolwarm and \fast. In the \coolwarm the 3D forms are clearer than but in visualizations showing the full range of the data, detail is lost.  When using \fast, one can add a default light under the light inspector function, requiring only a box check, a much easier task than trying to increase the internal luminance range as that would require adding and adjusting individual control points.
  
 \section{USER FEEDBACK}
 
@@ -370,7 +370,7 @@ In particular, \fast has a higher $\Delta$E discriminability metric.
 As measured by CCC-Tool~\cite{Nardini2021}, \coolwarm has an average local CIE$\Delta$E2000 discriminability score of 120 whereas \fast has a score of 174. Other discriminability metrics similarly show improvements with \fast.
 All that said, we recognize that \fast%
 %, shown in Figure \ref{Larsen3},
-likely performs less well in general than the \blueorange colormap it is based on. This is because Blue-Orange divergent contains a wider range of luminence, being darker on the ends and going to white in the center.
+likely performs less well in general than the \blueorange colormap it is based on as \blueorange includes a larger luminence range, being darker on the ends and going to white in the center.
 These changes were necessary in order to adjust for the smoothness and robustness to shading on 3D surfaces.
 
 The \coolwarm colormap was designed about 15 years ago to move away from the \huewheel colormap and its rainbow colors because of the strong evidence at the time of its poor perceptual properties~\cite{Rogowitz1998,Borland2007,Ware1988,Light2004}.
@@ -392,7 +392,7 @@ Thus, we are not ready to loop back around to the full hues of a rainbow.
 Our final iteration of the new colormap, which we dub ``\fast,'' is demonstrated in Figure~\ref{Larsen3} as well as numerous other figures in this paper.
 This colormap is provided as one of the available colormaps in ParaView~5.12 and will become the default colormap in ParaView~5.13.
 
-Revisiting the criteria presented at the beginning of this paper, evaluations and user feedback show the advantages of \fast over \coolwarm and other standard defaults.
+Revisiting the criteria presented at the beginning of this paper, evaluations and user feedback show the advantages of \fast over \coolwarm and other standard defaults. Figure~\ref{Matrix} provides comparisons of the criteria across five data sets.
 
 
 %\begin{figure}
@@ -400,8 +400,6 @@ Revisiting the criteria presented at the beginning of this paper, evaluations an
 %\caption{Combustion simulation (Larsen, LLNL) of \coolwarm (left) and \fast (right) colormaps demonstrating to discriminatory power in the mid-range of data values.}
 %\label{Larsen}
 %\end{figure}
-
-\textit{Ken, Alan had a few comments in the pdf. Do you want to address? They are: In Discriminative powers, compared to what?  "Fast performs better on every color discriminatory metric that we have available compared to Cool to Warm.; Uniformly?; Robustness to shading on 3D surfaces is an awkward sentence.}
 
 
 \begin{itemize}
@@ -417,7 +415,7 @@ Revisiting the criteria presented at the beginning of this paper, evaluations an
   \coolwarm and \fast use the same cues of luminance and warmth for color order.
 \item \emph{Robustness to shading on 3D surfaces} --
   \fast allows the end colors to become darker for greater discriminability.
-  This makes shapes a bit harder but still possible to discern in the worst case scenario of values all at one end of the colormap range (see Figure~\ref{fig:3d-shading}, right column).
+  This makes shapes a bit harder but still possible to discern in the worst case scenario of values all at one end of the colormap range (see Figure~\ref{Matrix}, right column).
 \item \emph{Robustness to colorblindness} --
   Colorblindness was always kept in mind when designing \fast.
   Figure~\ref{fig:colorblindness} shows that \fast responds just as well to common forms of colorblindness as does \coolwarm.
