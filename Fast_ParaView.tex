@@ -25,9 +25,9 @@
 \usepackage{color}
 \newcommand*{\fix}[1]{\textbf{\emph{\textcolor{red}{#1}}}}
 
+\usepackage{booktabs}
 \usepackage{paralist}
 \usepackage{subcaption}
-
 \usepackage{xspace}
 
 \newcommand*{\colormap}[1]{\textsl{#1}\xspace}
@@ -472,7 +472,46 @@ Thus, we are not ready to loop back around to the full hues of a rainbow.
 \section{CONCLUSION}
 
 Our final iteration of the new colormap, which we dub ``\fast,'' is demonstrated in Figure~\ref{Larsen3} as well as numerous other figures in this paper.
+The colors are listed in Table~\ref{tab:colors}.
 This colormap is provided as one of the available colormaps in ParaView~5.12 and will become the default colormap in ParaView~5.13.
+
+\definecolor{fast0}{RGB}{ 14,  14, 120}
+\definecolor{fast1}{RGB}{ 62, 117, 207}
+\definecolor{fast2}{RGB}{ 91, 190, 243}
+\definecolor{fast3}{RGB}{175, 237, 234}
+\definecolor{fast4}{RGB}{229, 241, 196}
+\definecolor{fast5}{RGB}{244, 213, 130}
+\definecolor{fast6}{RGB}{237, 158,  80}
+\definecolor{fast7}{RGB}{204,  90,  41}
+\definecolor{fast8}{RGB}{150,  20,  30}
+
+\newcommand*{\colordemo}[1]{\colorbox{#1}{\phantom{X}}}
+
+\begin{table}[t]
+  \centering
+  \caption{
+    Color values used for the \fast colormap control points.
+    These colors are intended to be interpolated in the CIELAB color space.
+    Note that these control points are not evenly distributed.
+    Pay mind to the interpolant x.
+  }
+  \label{tab:colors}
+  \begin{tabular}{r@{\quad\quad[}r@{, }r@{, }r@{]\quad}c}
+    \toprule
+    \multicolumn{1}{c@{\quad\quad\phantom{[}}}{x} & \multicolumn{4}{c}{RGB Color} \\
+    \midrule
+    0.00 &  14 &  14 & 120 & \colordemo{fast0} \\
+    0.17 &  62 & 117 & 207 & \colordemo{fast1} \\
+    0.30 &  91 & 190 & 243 & \colordemo{fast2} \\
+    0.43 & 175 & 237 & 234 & \colordemo{fast3} \\
+    0.50 & 229 & 241 & 196 & \colordemo{fast4} \\
+    0.59 & 244 & 213 & 130 & \colordemo{fast5} \\
+    0.71 & 237 & 158 &  80 & \colordemo{fast6} \\
+    0.85 & 204 &  90 &  41 & \colordemo{fast7} \\
+    1.00 & 150 &  20 &  30 & \colordemo{fast8} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 Revisiting the criteria presented at the beginning of this paper, evaluations and user feedback show the advantages of \fast over \coolwarm and other standard defaults. Figure~\ref{fig:Matrix} provides comparisons of the criteria across five data sets.
 
