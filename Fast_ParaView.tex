@@ -78,10 +78,11 @@ Here we present a new ParaView default colormap, the criteria and methods of dev
 
 \chapteri{T}he colormap is a critical part of any pseudocolor visualization.
 A colormap is a simple function that maps numbers to colors, which can then be applied to visually categorize data, highlight data, or represent a continuous distribution of values over a surface or volume.
-
 The colormap is most recognizable to users as a bar painted with a transition of colors representing a range of numbers from low to high.
-When presented with these colors, a viewer makes the reverse translation from colors back to numbers. The efficacy of a pseudocolor visualization depends on a person's ability to perceive and translate these colors.
+When presented with these colors, a viewer makes determinations of the values represented by these numbers and the patterns they form.
+The efficacy of a pseudocolor visualization depends on a person's ability to perceive and translate these colors.
 
+Ideally, each visualization would have a colormap tailored to the specifics of its data, tasks, and audience, but this is usually impractical.
 A typical user is unlikely to be a color expert, so it is imperative that the visualization system provide sound options that accurately and impartially represent the data. It is particularly important to have a good default colormap that is used in the absence of any further configuration. Many users will have neither the inclination nor the proficiency to change the default colors selected by the visualization system.
 
 
@@ -96,6 +97,7 @@ Here we present the new default colormap design for Paraview, a scientific visua
 
 Default colormaps must balance the needs of many users. This raises distinct challenges for colormap construction in ParaView and similar scientific visualizaton software.
 Care has been taken to choose colors and colormaps in ParaView that work well in a variety of contexts.
+Because ParaView supports switching among these views or multiple views together and because ParaView keeps colors consistent across them for clarity, the default colors must be adept when displayed in any of these contexts.
 This paper describes the criteria and rationale behind the construction choices in the new default colormap in ParaView.
 The criteria and specific changes stem from over a decade of collaboration with scientists at Los Alamos National Laboratory, Sandia National Laboratories, and other institutions.
 
@@ -104,6 +106,7 @@ This colormap is formed by interpolating along the hues, typically from blue to 
 (Note that this colormap is often referred to as the ``Rainbow'' colormap, but we avoid that name to remove confusion with other maps designed with colors from the rainbow.)
 \huewheel is a common choice as it is the simplest way to program a sequence of many vibrant colors.
 Although the criticisms of the \huewheel colormap were known even at the inception of the ParaView software~\cite{Rogowitz1998}, there were few practical alternatives.
+
 It was when Borland and Taylor~\cite{Borland2007} admonished ParaView and other visualization programs that the developers became motivated to improve their default colormap design.
 After adapting the best recommendations available at the time and drawing inspiration from the GIS community, which had extensive color map recommendations~\cite{Brewer2003}, the team settled on a \coolwarm colormap design~\cite{Moreland2009} shown in the center panel of Figure~\ref{Larsen3}.
 This map adopts a diverging colormap approach with a smoothed luminance profile in the transition between hues.
@@ -141,7 +144,7 @@ There are many guidelines for colormaps proposed in the literature. We use the c
 
 \end{itemize}
 
-The Color Theory section below details relevant artistic color theory illuminates why these characteristics are not independent, and improvements in one property could degrade the effectiveness in others.
+The color theory section below details relevant artistic color theory illuminates why these characteristics are not independent, and improvements in one property could degrade the effectiveness in others.
 
 %For example, issues with order, 3D surfaces, or colorblindess are typically resolved by limiting the colors used, but reducing the number of colors lowers the discriminative power of the map. Consequently, there is no such thing as the perfect color map. Our default colormap needs to be a jack of all trades even if it is a master at none.
 
@@ -213,7 +216,7 @@ Creating custom colormaps requires time and color expertise. Even scientists who
 
 Ware tested the internal contrast levels of commonly used colormaps.
 The results, shown in Figure~\ref{Ware}, graph the amount of contrast across the colormaps.
-It illustrates the uneven contrast distribution of \huewheel, the more consistent higher level of contrast in both \blueorange, and \extendedcoolwarm and the shortcomings of other standards.
+It illustrates the uneven contrast distribution of \huewheel, the more consistent higher level of contrast in both \blueorange and \extendedcoolwarm (an alternative to \blueorange using extended hues from \coolwarm), and the shortcomings of other standards.
 
 \begin{figure*}[t]
 \centering
@@ -405,7 +408,7 @@ Both changes are shown in the middle of Figure~\ref{fig:iterations}.
 
 However, the discriminatory power of this colormap was significantly compromised from these previous changes. We tried increasing the saturation across the colormap and extending the warm hues toward purple. Here the transition toward fushsia became problematic. To compensate, we increased the saturation again, removed the purple and shifted the turquoise region toward the center to provide the needed discrimination, resulting in the final \fast colormap shown on the right of Figure~\ref{fig:iterations}.
 
-These candidate colormaps manifest different balances of our criteria: the luminance range to balance discriminability and 3D shading; different luminance adjustments at the center point to balance uniformity and smoothness; and different hue ranges to balance discriminability and order.
+These candidate colormaps manifest different balances of our criteria: the luminance range to balance discriminability and 3D shading, different luminance adjustments at the center point to balance uniformity and smoothness, and different hue ranges to balance discriminability and order.
 
 
 %%\centering
@@ -442,11 +445,19 @@ Our final design has nine control points as it is the minimum needed to produce 
 As we neared completion of the new colormap design, the development team wanted feedback from current users about these changes before being affected by them.
 Sandia National Laboratories has a strong ParaView user base and an active support team for them.
 The ParaView support team sent an email to the Sandia ParaView users informing them of planned changes and welcoming any feedback.
+The email elicited feedback with the following open-ended text: ``The ParaView team is debating changing the default, as shown below. Note that users can always change back to our current map and palette. If anyone has any opinions on changes, please send your thoughts back to us.''
+This was followed by a set of images comparing the \coolwarm colormap and an early version of \fast along with a potential change in background shade that was being considered.
 
 Of the roughly 800 users receiving the email, 18 responded back with comments about the change of the default colormap from Cool to Warm to Fast.
 Of these, 15 expressed a clear preference for the new colormap.
-Only 1 preferred the original Cool to Warm colormap with the remaining 2 expressing no preference of one over the other.
-Although no formal study has been done, we see this as a clear general preference for the new colormap.
+We made no attempt to quantify the rating of responses, but they ranged from very favorable (e.g., ``I’ll emphatically vote for the neutral gray background and FAST colormap.'' and ``I like the FAST colormap. Seems like it uses more of the color spectrum whereas the other only uses red, white, blue.'') whereas others only had a slight preference (e.g., ``I don’t have a strong opinion on the default color map; I would maybe lean towards the new one.'' and ``The new one does look a bit better, but the old one isn’t too bad either.'').
+
+Of the remaining 3 respondees, 2 did not express a strong preference.
+One stated, ``The new/proposed color map seems fine, the minima/maxima seem a little dark to me personally.''
+One respondee disapproved of any change but also would use neither colormap: ``I would never vote to change something that is working.  I also never ever use the default color map. I vote do not change.''
+Only one respondee gave a preference to the \coolwarm colormap citing issues with banding on some displays: ``The one thing I’ll point out is that in the attached image, there appears to be more banding of colors resulting in sharper steps visually (particularly in the bottom half of the image). Probably this is just an artifact, but aside from the increased contrast, it makes me prefer the images [of \coolwarm{}] to the ones [of \fast{}].''
+
+Although no formal study has been done, we see this overall as a clear general preference for the new colormap.
 
 
 \section{PERCEPTUAL EVALUATION}
@@ -475,7 +486,7 @@ Thus, we are not ready to loop back around to the full hues of a rainbow.
 
 \section{CONCLUSION}
 
-Our final iteration of the new colormap, which we dub ``\fast,'' is demonstrated in Figure~\ref{Larsen3} as well as numerous other figures in this paper.
+Our final iteration of the new colormap, which we dub ``\fast,''\footnote{The name \fast is meaningless, but was chosen as it is reminiscent of other colormap names like \colormap{Jet} and \turbo.} is demonstrated in Figure~\ref{Larsen3} as well as numerous other figures in this paper.
 The colors are listed in Table~\ref{tab:colors}.
 This colormap is provided as one of the available colormaps in ParaView~5.12 and will become the default colormap in ParaView~5.13.
 
@@ -502,7 +513,7 @@ This colormap is provided as one of the available colormaps in ParaView~5.12 and
   \label{tab:colors}
   \begin{tabular}{r@{\quad~( }r@{, }r@{, }r@{ )\quad~( }r@{, }r@{, }r@{ )\quad~}c}
     \toprule
-    \multicolumn{1}{c@{\quad~\phantom{( }}}{x} & \multicolumn{3}{c@{\phantom{ )}\quad~\phantom{( }}}{RGB} & \multicolumn{3}{c}{CIELAB} \\
+    \multicolumn{1}{c@{\quad~\phantom{( }}}{x} & \multicolumn{3}{c@{\phantom{ )}\quad~\phantom{( }}}{RGB} & \multicolumn{3}{c@{ \phantom{)}\quad~}}{CIELAB} \\
     \midrule
     0.00 &  14 &  14 & 120 &   14.3 &  39.5 & -57.3 & \colordemo{fast0} \\
     0.17 &  62 & 117 & 207 &   49.9 &  11.4 & -51.5 & \colordemo{fast1} \\
@@ -541,6 +552,10 @@ Revisiting the criteria presented at the beginning of this paper, evaluations an
 \item \emph{Robustness to shading on 3D surfaces} --
   \fast allows the end colors to become darker for greater discriminability.
   This makes shapes a bit harder but still possible to discern in the worst case scenario of values all at one end of the colormap range (see Figure~\ref{fig:Matrix}, right column).
+  Although dark surfaces can be reveled with brighter lighting, such bright colors could wash out light colors.
+  Requiring customized lighting is just pushing the problem back on the user again, so we discount this solution.
+  It is also conceivable that changes in lightness could obfuscate the shape.
+  Research for such an effect is lacking, but anecdotally we have not encountered such an occurrence.
 \item \emph{Robustness to colorblindness} --
   Colorblindness was always kept in mind when designing \fast.
   Figure~\ref{fig:colorblindness} shows that \fast responds just as well to common forms of colorblindness as does \coolwarm.

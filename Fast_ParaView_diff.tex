@@ -1,7 +1,7 @@
 \documentclass{IEEEcsmag}
 %DIF LATEXDIFF DIFFERENCE FILE
 %DIF DEL original-submission/Fast_ParaView.tex      Mon Mar  4 09:38:15 2024
-%DIF ADD original-submission/../Fast_ParaView.tex   Mon Mar  4 09:38:15 2024
+%DIF ADD original-submission/../Fast_ParaView.tex   Tue Mar  5 15:49:12 2024
 
 
 \usepackage[colorlinks,urlcolor=blue,linkcolor=blue,citecolor=blue]{hyperref}
@@ -32,8 +32,21 @@
 \usepackage{color}
 \newcommand*{\fix}[1]{\textbf{\emph{\textcolor{red}{#1}}}}
 
-\usepackage{subcaption}
+%DIF 28c28-29
+%DIF < \usepackage{subcaption}
+%DIF -------
+\definecolor{km}{RGB}{105, 41, 197} %DIF > 
+\definecolor{fs}{RGB}{17, 146, 233} %DIF > 
+%DIF -------
 
+%DIF 30a31-36
+\newcommand*{\km}[1]{\textcolor{km}{\emph{\textbf{#1} -- KM}}} %DIF > 
+\newcommand*{\fs}[1]{\textcolor{fs}{\emph{\textbf{#1} -- FS}}} %DIF > 
+ %DIF > 
+\usepackage{booktabs} %DIF > 
+\usepackage{paralist} %DIF > 
+\usepackage{subcaption} %DIF > 
+%DIF -------
 \usepackage{xspace}
 
 \newcommand*{\colormap}[1]{\textsl{#1}\xspace}
@@ -42,6 +55,7 @@
 \newcommand*{\blueorange}{\colormap{Blue-Orange Diverging}}
 \newcommand*{\fast}{\colormap{Fast}}
 \newcommand*{\turbo}{\colormap{Turbo}}
+\newcommand*{\extendedcoolwarm}{\colormap{Extended Cool Warm}} %DIF > 
 %DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
 %DIF UNDERLINE PREAMBLE %DIF PREAMBLE
 \RequirePackage[normalem]{ulem} %DIF PREAMBLE
@@ -107,8 +121,8 @@
 ParaView is one of the most prominent software tools for scientific visualization used by scientists around the world.
 Color is a primary conduit to visually map data to its representation and thus enable investigation and interpretation of the data.
 Colormap selection has a significant impact on the data revealed; its design and selection is a critical aspect of scientific data visualization.
-The most common choice for a user is the program's default colormap, so careful consideration of this default is consequential.
-Although the current default colormap in ParaView, a succession of \DIFdelbegin \DIFdel{colors from cool to warm}\DIFdelend \DIFaddbegin \DIFadd{hues from cool blue to warm red}\DIFaddend , has served the community well, research shows that more nuanced colormap configurations increase \DIFdelbegin \DIFdel{discrinimability while maintaining the }\DIFdelend \DIFaddbegin \DIFadd{discriminability while maintaining }\DIFaddend other critical metrics. 
+\DIFdelbegin \DIFdel{The most }\DIFdelend \DIFaddbegin \DIFadd{A }\DIFaddend common choice for a user is the program's default colormap, so careful consideration of this default is consequential.
+Although the current default colormap in ParaView, a succession of \DIFdelbegin \DIFdel{colors from cool to warm}\DIFdelend \DIFaddbegin \DIFadd{hues from cool blue to warm red}\DIFaddend , has served the community well, research shows that more nuanced colormap configurations increase \DIFdelbegin \DIFdel{discrinimability while maintaining the }\DIFdelend \DIFaddbegin \DIFadd{discriminability while maintaining }\DIFaddend other critical metrics.
 \DIFdelbegin \DIFdel{This inspires }\DIFdelend \DIFaddbegin \DIFadd{These findings inspire }\DIFaddend us to revisit and update the default colors in ParaView.
 Here we present a new ParaView default colormap, the criteria and methods of development, and example visualizations and analytic metrics.
 \end{abstract}
@@ -117,17 +131,21 @@ Here we present a new ParaView default colormap, the criteria and methods of dev
 
 \chapteri{T}he colormap is a critical part of any pseudocolor visualization.
 A colormap is a simple function that maps numbers to colors, which can then be applied to visually \DIFaddbegin \DIFadd{categorize data, highlight data, or }\DIFaddend represent a continuous distribution of values over a surface or volume.
-
-The colormap is most recognizable to users as a bar painted with a transition of colors representing a range of numbers from low to high.  
 \DIFdelbegin %DIFDELCMD < 
 
 %DIFDELCMD < %%%
-\DIFdelend When presented with these colors, a viewer makes the reverse translation from colors back to numbers\DIFdelbegin \DIFdel{, and the }\DIFdelend \DIFaddbegin \DIFadd{. The }\DIFaddend efficacy of a pseudocolor visualization depends on a person's ability to perceive and translate these colors.  
+\DIFdelend The colormap is most recognizable to users as a bar painted with a transition of colors representing a range of numbers from low to high.
+\DIFdelbegin %DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelend When presented with these colors, a viewer makes \DIFaddbegin \DIFadd{determinations of the values represented by these numbers and }\DIFaddend the \DIFdelbegin \DIFdel{reverse translation from colors back to numbers , and the }\DIFdelend \DIFaddbegin \DIFadd{patterns they form.
+The }\DIFaddend efficacy of a pseudocolor visualization depends on a person's ability to perceive and translate these colors.
 \DIFaddbegin 
 
- \DIFaddend A typical user is unlikely to be a color expert, so it is imperative that the visualization system \DIFdelbegin \DIFdel{make good choices}\DIFdelend \DIFaddbegin \DIFadd{provide sound options that accurately and impartially represent the data}\DIFaddend . It is particularly important to have a good default colormap that is used in the absence of any further configuration. Many users will have neither the inclination nor the proficiency to change the default colors selected by the visualization system.
+\DIFadd{Ideally, each visualization would have a colormap tailored to the specifics of its data, tasks, and audience, but this is usually impractical.
+}\DIFaddend A typical user is unlikely to be a color expert, so it is imperative that the visualization system \DIFdelbegin \DIFdel{make good choices}\DIFdelend \DIFaddbegin \DIFadd{provide sound options that accurately and impartially represent the data}\DIFaddend . It is particularly important to have a good default colormap that is used in the absence of any further configuration. Many users will have neither the inclination nor the proficiency to change the default colors selected by the visualization system.
 
-  
+
 %DIF <  Commenting out this figure. It shows the same thing as Figure \ref{wind3} but worse. It is also never referenced (used) in the paper. (Ken)
 %DIF < % \begin{figure}[t]
 %DIF < % \centerline{\includegraphics[width=18.5 pc]{pics/2waves.png}}
@@ -158,7 +176,8 @@ The colormap is most recognizable to users as a bar painted with a transition of
 
 \DIFadd{Default colormaps must balance the needs of many users. This raises distinct challenges for colormap construction }\DIFaddend in ParaView and similar \DIFdelbegin \DIFdel{products}\DIFdelend \DIFaddbegin \DIFadd{scientific visualizaton software}\DIFaddend .
 Care has been taken to choose colors \DIFaddbegin \DIFadd{and colormaps }\DIFaddend in ParaView that work well in a variety of contexts.
-This paper describes the criteria and rationale behind the \DIFdelbegin \DIFdel{default color choices in ParaView, focusing on the most recent changes to the application.
+\DIFaddbegin \DIFadd{Because ParaView supports switching among these views or multiple views together and because ParaView keeps colors consistent across them for clarity, the default colors must be adept when displayed in any of these contexts.
+}\DIFaddend This paper describes the criteria and rationale behind the \DIFdelbegin \DIFdel{default color choices in ParaView, focusing on the most recent changes to the application.
 These changes arise from over 10 years working }\DIFdelend \DIFaddbegin \DIFadd{construction choices in the new default colormap in ParaView.
 The criteria and specific changes stem from over a decade of collaboration }\DIFaddend with scientists at Los Alamos National Laboratory, Sandia National Laboratories, and other institutions.
 
@@ -168,23 +187,177 @@ This colormap is formed by interpolating along the hues, typically from blue to 
 \huewheel is a common choice as it is the simplest way to \DIFdelbegin \DIFdel{produce }\DIFdelend \DIFaddbegin \DIFadd{program }\DIFaddend a sequence of many vibrant colors.
 \DIFdelbegin \DIFdel{However, because these colors are defined by the physics of display technology rather than the physiology of vision, the colors are unevenly distributed and can cause features to be inappropriately accentuated or diminished.
 }\DIFdelend Although the criticisms of the \huewheel colormap were known even at the inception of the ParaView software~\cite{Rogowitz1998}, there were few practical alternatives.
-\DIFdelbegin %DIFDELCMD < 
 
-%DIFDELCMD < %%%
-\DIFdelend It was when Borland and Taylor~\cite{Borland2007} admonished ParaView \DIFdelbegin \DIFdel{by name }\DIFdelend \DIFaddbegin \DIFadd{and other visualization programs }\DIFaddend that the developers became motivated to improve their default colormap design.
+It was when Borland and Taylor~\cite{Borland2007} admonished ParaView \DIFdelbegin \DIFdel{by name }\DIFdelend \DIFaddbegin \DIFadd{and other visualization programs }\DIFaddend that the developers became motivated to improve their default colormap design.
 After adapting the best recommendations available at the time and drawing inspiration from the GIS community, which had extensive color map recommendations~\cite{Brewer2003}, the team settled on a \coolwarm colormap design~\cite{Moreland2009} shown in the center \DIFaddbegin \DIFadd{panel }\DIFaddend of Figure~\DIFdelbegin \DIFdel{\ref{Ast}}\DIFdelend \DIFaddbegin \DIFadd{\ref{Larsen3}}\DIFaddend .
-This map adopts a diverging colormap approach with a smoothed luminance profile in the transition between hues. 
+This map adopts a diverging colormap approach with a smoothed luminance profile in the transition between hues.
 \DIFdelbegin %DIFDELCMD < 
 
 %DIFDELCMD < %%%
 \DIFdelend Since the introduction of the \coolwarm colormap as the default in ParaView, many practitioners have proposed alternate maps~\cite{Samsel2015}, and multiple perceptual studies have been conducted to evaluate these colormaps~\cite{Ware2017}.
 Some show that the \coolwarm colormap performs less well than its alternatives, particularly with respect to its discriminability~\cite{Ware2017,Ware2019}.
-Consequently, the ParaView development team has been motivated to revisit its default colormap\DIFdelbegin \DIFdel{and potentially change it}\DIFdelend . 
+Consequently, the ParaView development team has been motivated to revisit its default colormap\DIFdelbegin \DIFdel{and potentially change it}\DIFdelend .
 
 This paper describes the processes we undertook to design a new default colormap for ParaView, which we dub ``\fast\DIFdelbegin \DIFdel{.''Use of this colormap  can be seen in the right hand }\DIFdelend \DIFaddbegin \DIFadd{'', shown on the right }\DIFaddend side of Figure\DIFdelbegin \DIFdel{\ref{Ast}}\DIFdelend \DIFaddbegin \DIFadd{~\ref{Larsen3}}\DIFaddend .
 We describe the criteria we used in designing this colormap\DIFdelbegin \DIFdel{, go through the process of iteratively refining colors to get us to our final map, get }\DIFdelend \DIFaddbegin \DIFadd{: the iterative design process; refining the hue selection; smoothing the transitions; distributing the final colormap to get }\DIFaddend feedback from current users\DIFdelbegin \DIFdel{of the software, and use perceptual modelsto make }\DIFdelend \DIFaddbegin \DIFadd{; evaluation using perceptual models; and making the }\DIFaddend final refinements.
 
-\DIFaddbegin \begin{figure}[htb]
+
+\section{CRITERIA}
+
+There are many guidelines for colormaps proposed in the literature. We use the collection compiled by Bujack et al.~\cite{Bujack2018} as a guide. The characteristics most important to us, in no particular order, are as follows.
+
+\begin{itemize}
+
+\item \emph{Discriminative \DIFdelbegin \DIFdel{powers}\DIFdelend \DIFaddbegin \DIFadd{power}\DIFaddend } --
+  We wish to maximize the number of just noticeable differences in the colormap to make subtle differences visible.
+\item \emph{Uniformity} --
+  The perceptual difference between colors should be commensurate with the difference in the numbers they represent.
+\item \emph{Smoothness} --
+  The rate of change of coloring should be uniform along with the difference in colors themselves.
+  This is particularly important for the luminance profile where a sharp change from increasing to decreasing brightness can cause undesired bands.
+\item \emph{Order} --
+  The color sequence should have an easy to intuit, or at least easy to remember, progression from low to high values.
+  The colors should follow natural interpretations and accepted conventions where possible.
+\item \emph{Robustness to shading on 3D surfaces} -- Shading, which darkens a surface based on its orientation with respect to the light source and viewer, is vital in perceiving shape.
+  If a surface is painted with overly dark colors, the shading becomes indiscernible\DIFdelbegin \DIFdel{as can be seen in Figure~\ref{fig:3d-shading}.
+  }\DIFdelend \DIFaddbegin \DIFadd{.
+  %DIF > as can be seen in Figure~\ref{fig:3d-shading}.
+}\DIFaddend \item \emph{Robustness to colorblindness} --
+  The colors should be distinguishable for the many users with various types and degrees of colorblindness.
+\item \emph{Aesthetically pleasing} --
+  Although quite subjective, ParaView users should generally be pleased with the new colors.
+
+\end{itemize}
+
+\DIFdelbegin \DIFdel{It should be noted that }\DIFdelend \DIFaddbegin \DIFadd{The color theory section below details relevant artistic color theory illuminates why }\DIFaddend these characteristics are not independent, and improvements in one property could degrade the effectiveness in others.
+\DIFdelbegin \DIFdel{For example, issues with order, 3D surfaces, or colorblindess are typically resolved by limiting the colors used,
+but reducing the number of colors lowers the discriminative power of the map. Consequently, there is no such thing as the perfect color map. Our default colormap needs to be a jack of all trades even if }\DIFdelend \DIFaddbegin 
+
+%DIF > For example, issues with order, 3D surfaces, or colorblindess are typically resolved by limiting the colors used, but reducing the number of colors lowers the discriminative power of the map. Consequently, there is no such thing as the perfect color map. Our default colormap needs to be a jack of all trades even if it is a master at none.
+
+
+
+\section {\DIFadd{COLORMAPS \& ARTISTIC COLOR THEORY}}
+
+\DIFadd{Colormaps come in a wide variety, categorized loosely by their luminance distribution and number of ramps.
+%DIF > and designed to address different visualization tasks, data distributions as well as the needs and conventions of the science domain.
+General categories include discrete, linear, diverging, isoluminent, and more custom constructions such as wave maps.
+Discrete colormaps contain specific hues without interpolation between hues.
+Linear maps, colormaps that span one value ramp, enable intuitive identification of scalar values and equalized attention across the visualization but contain lower discriminatory power due to the monotonic luminance profile ramp and a narrow range of hues.
+Diverging maps are colormaps that contain two abutting value ramps, which provides addition discriminatory power.
+}\coolwarm\DIFadd{, }\blueorange\DIFadd{, and }\fast \DIFadd{are all examples of diverging maps.
+Isolumient colormaps hold advantages for specific uses but suffer from low discriminatory power as by definition they seek to limit the luminance range as shown in Figure~\ref{Ware}.
+}
+
+\DIFadd{As a base for our discussion, it will be helpful to understand a bit about Artistic Color Contrast Theory \mbox{%DIFAUXCMD
+\cite{Itten, Albers}}\hskip0pt%DIFAUXCMD
+. Artistic Color Contrast Theory, the foundation of painting since the Renaissance, is a set of principles that drive the characteristics and interactions and of colors. The principles center on the seven types of color contrast~\mbox{%DIFAUXCMD
+\cite{Itten}}\hskip0pt%DIFAUXCMD
+.
+The first three are
+}\begin{inparaenum}[(1)]
+\item \DIFadd{contrast of hue,
+}\item \DIFadd{contrast of saturation, and
+}\item \DIFadd{contrast of luminance, which are familiar as they align with parameters of HSL and other color spaces.
+Two more are
+}\item \DIFadd{cool-warm contrast and
+}\item \DIFadd{complimentary contrast, both of which involve colors on opposite sides of the color wheel.
+The remaining two are
+}\item \DIFadd{simultaneous contrast at play in the }\huewheel \DIFadd{colormap and
+}\item \DIFadd{contrast of extension, which speaks to balance of the area covered by specific hues.
+}\end{inparaenum}
+
+\DIFadd{Colormaps translate data, not through the colors themselves, but through the }\textit{\DIFadd{contrast}} \DIFadd{between perceivable colors within the colormap. In discrete colormaps it is the contrast between the individual colors that reveals the data. Scalar colormaps are smooth ramps generated by selecting a set of control points and then interpolating between the control points in CIELAB colorspace. The discriminatory power in a colormap relies on the contrast across its entire path through colorspace, which includes both the control points and the colors on the path through color space.
+}
+
+\DIFadd{Figure~\ref{contrast} illustrates three types of color contrast as applied to data from a simulation of bow waves in Ganymede's magnetosphere. The data range is clipped to concentrate the contrast in the bow waves, which is the area of interest. The figure contains three divergent colormaps which illustrate specific types of contrast - hue, saturation and luminance. The hue contrast is between red and blue; saturated, warm hues against a muted tan hue; luminance, black and white. On right, multiple types on contrasts are combined: hue, the range of cool colors in the blue green ramp; saturation, the saturated cool hues with the muted tan hue; luminance, the dark greens and blues against the light tan; and a subtle cool warm contrast between the cool blue to green range and the warm yellow tan in the upper range. The luminance alone provides clear differentiation of the large features but does not capture the nuance shown in the saturation contrast example.
+}
+
+\km{I am thoroughly confused by this description. The description in the text does not match the description in the caption. Is this meant to say that the first image shows hue contrast, the second saturation contrast, etc.? If so, how is the left image not also showing, say, cool-warm contrast? Why is the third image (luminance contrast?) two solid colors but the others gradients?}
+
+\fs{The point of this figure is to show the primary types of contrast - hue, sat and ,value, applied to data. People understand the verbal description of contrast types but it I find that in order to get buy in you need to illustrate the concepts on data.
+I am always surprised when I get asked things like what is a muted color.what are the cool colors, etc. This figure was to lay the foundation for understanding what those mean. Yes, they all have multiple types of contrast but that cant be avoided.}
+
+\km{If the last image is a combination of contrasts, why not show \fast? }
+
+\fs{Fast is a compromise and thus does not present as clear an example of the impact of multiple types of contrast.}
+
+\km{And what are the images supposed to demonstrate? Are some showing detail not seen in the others?}
+
+\fs{to some degree yes but the point is to help them make the translation between adjusting the characteristics of a colormap and how that impacts what you see.}
+
+\km{That is really my confusion. I get that the pictures are supposed to show me how the characteristics impact what I see, but apart from different colors I see pretty much the same thing in each picture. Maybe if it was explicitly said what is different about each one that would help.}
+
+\fs{None of these issues are hills I want to die on. Happy to make changes. It would be easier to discuss as we approach the topic differently.}
+
+\km{Generally, I liked reading your discussion of the different types of contrast. This was new to me and I'm very curious about I would apply this. The problem for me (and I think I am part of the target audiance) is that the picture never brought it together. I look at it, say, yup the colors are different, but otherwise I don't immediately see how one might be ``better'' than another. At the very least, we should be able to point to the right image and identify something better than each other image independently, but I don't clearly see that.}
+
+
+\DIFadd{Selecting a colormap best suited to specific tasks, datasets, and data distributions is key to maximizing the capability of color to translate data; however, it is a time-consuming process.
+}
+
+\DIFadd{Creating custom colormaps requires time and color expertise. Even scientists who have taken our color tutorials report that while they understand the value of custom colormaps and have devoted time to customizing maps for their data, they report that }\DIFaddend it is a \DIFdelbegin \DIFdel{master at none.
+}\DIFdelend \DIFaddbegin \DIFadd{challenging process that often does not produce improvements on the default or other readily available options.
+}\DIFaddend 
+
+
+\DIFdelbegin \section{\DIFdel{CONSTRUCTING A NEW DEFAULT}}
+%DIFAUXCMD
+\addtocounter{section}{-1}%DIFAUXCMD
+\DIFdelend %DIF > \km{Is the use of the word ``hue'' here consistent with how it is used elsewhere in the paper? Throughout the paper, we consider hue as one color property in a hue-saturation-luminance model. The linear maps described above (sometimes) change only saturation and luminance, leaving hue alone. Thus, when this paragraph states that colormaps translate data only through contrast of hues, that would mean that a linear map provides no data because it has no change of hue. Does the paragraph more generally mean perceptual differences in color rather than just differences in hue?}
+
+%DIF < \begin{figure}
+%DIF < \centerline{\includegraphics[width=16pc]{pics/Maps2.png}}
+%DIF < \caption{The \huewheel and \coolwarm colormaps.}
+%DIF < \label{r and cw}
+%DIF < \end{figure}
+%DIF > \fs{Yes, it is confusing. In my community hue refers  hue as you describe it but is also how we speak of individual colors, especially ones that are nuanced and without a specific name. I changed hue to colors and tried to clarify. If you have another suggestion, let me know.}
+
+\DIFaddbegin \begin{figure}
+\includegraphics[width=\linewidth]{pics/Ware17.png}
+\caption{\DIFaddFL{This chart by Ware et al. \mbox{%DIFAUXCMD
+\cite{Ware2017} }\hskip0pt%DIFAUXCMD
+illustrates the discriminatory at points across the colormap. The abbreviations, left to right: RA - }\huewheel\DIFaddFL{; CW - }\coolwarm\DIFaddFL{; ECW - }\extendedcoolwarm\DIFaddFL{; BOD = }\blueorange\DIFaddFL{; VI - }\colormap{Viridis}\DIFaddFL{; GP - }\colormap{Grayscale}\DIFaddFL{; GR - }\colormap{Green-Red}\DIFaddFL{. }}
+\label{Ware}
+\end{figure}
+
+\DIFadd{Ware tested the internal contrast levels of commonly used colormaps.
+The results, shown in Figure~\ref{Ware}, graph the amount of contrast across the colormaps.
+It illustrates the uneven contrast distribution of }\huewheel\DIFadd{, the more consistent higher level of contrast in both }\blueorange \DIFadd{and }\extendedcoolwarm \DIFadd{(an alternative to }\blueorange \DIFadd{using extended hues from }\coolwarm\DIFadd{), and the shortcomings of other standards.
+}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{Final_Pics/HSV.png}
+\caption{
+  \DIFaddFL{These visualizations are slices through magnetosphere around Ganymede, illustrating three primary types of contrast applied to data.
+  Left to right:  hue contrast; saturation contrast; value or luminance contrast; and a combination of hue, saturation, luminance, analogous contrast and cool - warm contrast.
+}}
+\label{contrast}
+\end{figure*}
+
+\DIFadd{Colormaps with high discriminatory power employ multiple types of contrast across the map.
+Looking at Figure~\ref{Larsen3}, }\huewheel \DIFadd{relies on hue and simultaneous contrast, }\coolwarm \DIFadd{narrows the hue range but gains contrast by adding two cropped luminance ranges.
+Fast, like }\huewheel \DIFadd{includes a wide range of hue, a range of saturation levels, two robust luminance ranges, and complimentary contrast created by the inclusion of blue and orange hues.
+When constructing colormaps there are always trade-offs about which types and how much contrast should be included.
+The goal is to maximize the contrast between the internal hues, while maintaining harmony across the colormap.
+}
+
+
+
+%DIF > For this reason, default colormaps need to be constructed to address the needs of a wide range of data types and distributions. Given that color is our primary means of revealing the data, the default colormap is a critical component of any visualization program.
+
+%DIF > The \huewheel colormap provided adequate discriminatory power when the range of data is small and detail is not required. However, as the data grows, the discriminatory power within colormaps needs to be increased to keep pace.
+
+\DIFaddend The \DIFaddbegin \DIFadd{most common request we receive from scientists is higher feature resolution, a property driven by the internal contrast levels within the colormap.
+Larger numbers of control points enable one to build higher levels of internal contrast; however they disrupt the ease of adjusting the map to align with specific data.
+}\fast \DIFadd{has nine control point, balancing these conflicting interests.
+Future work includes addressing this trade-off by an automating the rescaling on the control point distribution.
+}
+
+%DIF > It is worth noting that colormaps with larger numbers of control points are able to attain greater discriminatory power due to the greater control of hues sequences. However, here we have limited the number of control points as they make it difficult to adjust the hue distribution to meet the needs of your data while maintaining the even progression of contrast distribution.
+
+\begin{figure}[t]
   \begin{subfigure}{\linewidth}
     \includegraphics[width=\linewidth]{map-cool-to-warm}
     \vspace{-1.4\baselineskip}
@@ -194,7 +367,7 @@ We describe the criteria we used in designing this colormap\DIFdelbegin \DIFdel{
   \begin{subfigure}{\linewidth}
     \includegraphics[width=\linewidth]{Final_Pics/CW_extended.png}
     \vspace{-1.4\baselineskip}
-    \caption{\textit{\DIFaddFL{Cool Warm Extended}} \DIFaddFL{colormap.}}
+    \caption{\extendedcoolwarm \DIFaddFL{colormap.}}
     \label{fig:design:cw est}
   \end{subfigure}\\[4pt]
   \begin{subfigure}{\linewidth}
@@ -215,143 +388,23 @@ We describe the criteria we used in designing this colormap\DIFdelbegin \DIFdel{
   \label{fig:designs}
 \end{figure}
 
-
-\DIFaddend \section{CRITERIA}
-
-There are many guidelines for colormaps proposed in the literature. We use the collection compiled by Bujack et al.~\cite{Bujack2018} as a guide. The characteristics most important to us, in no particular order, are as follows.
-
-\begin{itemize}
-
-\item \emph{Discriminative \DIFdelbegin \DIFdel{powers}\DIFdelend \DIFaddbegin \DIFadd{power}\DIFaddend } --
-  We wish to maximize the number of just noticeable differences in the colormap to make subtle differences visible.
-\item \emph{Uniformity} --
-  The perceptual difference between colors should be commensurate with the difference in the numbers they represent.
-\item \emph{Smoothness} --
-  The rate of change of coloring should be uniform along with the difference in colors themselves.
-  This is particularly important for the luminance profile where a sharp change from increasing to decreasing brightness can cause undesired bands.
-\item \emph{Order} --
-  The color sequence should have an easy to intuit, or at least easy to remember, progression from low to high values.
-  The colors should follow natural interpretations and accepted conventions where possible.
-\item \emph{Robustness to shading on 3D surfaces} -- Shading, which darkens a surface based on its orientation with respect to the light source and viewer, is vital in perceiving shape.
-  If a surface is painted with overly dark colors, the shading becomes indiscernible as can be seen in Figure~\ref{fig:3d-shading}.
-\item \emph{Robustness to colorblindness} --
-  The colors should be distinguishable for the many users with various types and degrees of colorblindness.
-\item \emph{Aesthetically pleasing} --
-  Although quite subjective, ParaView users should generally be pleased with the new colors.
-
-\end{itemize}
-
-\DIFdelbegin \DIFdel{It should be noted that }\DIFdelend \DIFaddbegin \DIFadd{The Color Theory section below details relevant artistic color theory illuminates why }\DIFaddend these characteristics are not independent, and improvements in one property could degrade the effectiveness in others. 
-\DIFdelbegin \DIFdel{For example, issues with order, 3D surfaces, or colorblindess are typically resolved by limiting the colors used, but reducing the number of colors lowers the discriminative power of }\DIFdelend \DIFaddbegin 
-
-%DIF > For example, issues with order, 3D surfaces, or colorblindess are typically resolved by limiting the colors used, but reducing the number of colors lowers the discriminative power of the map. Consequently, there is no such thing as the perfect color map. Our default colormap needs to be a jack of all trades even if it is a master at none.
-
-
-
-\section {\DIFadd{COLORMAPS \& COLOR THEORY}}
-\DIFadd{Colormaps come in a wide variety, categorized loosely by their luminance distribution and number  of ramps. 
-%DIF > and designed to address different visualization tasks, data distributions as well as the needs and conventions of the science domain. 
-General categories include: discrete, linear, divergent, discrete, isoluminent and more custom constructions such as wave maps. Discrete colormaps contain specific hues without interpolation between hues. Linear maps, colormaps that span one value ramp, enable intuitive identification of scalar values and equalized attention across the visualization but contain lower discriminatory power due to the single value ramp and a narrow range of hues. Divergent maps are colormaps that contain two abutting value ramps which provides addition discriminatory power. }\coolwarm\DIFadd{, }\textit{\DIFadd{Blue=Orange divergent}} \DIFadd{and }\fast \DIFadd{are all examples of divergent maps. Isolumient colormaps hold advantages for specific uses but suffer from low discriminatory power as by definition they seek to limit the luminance range as shown in Figure~\ref{Ware}.
-}
-
-\DIFadd{It is helpful to understand a bit about artistic color theory \mbox{%DIFAUXCMD
-\cite{Itten} }\hskip0pt%DIFAUXCMD
-as a base for our discussion. Colormaps translate data, not through the colors themselves, but }\DIFaddend the \DIFaddbegin \textit{\DIFadd{contrast}} \DIFadd{between the perceivable hues. In discrete colormaps it is the contrast between the individual hues. Scalar colormaps include the interpolation between the hue control points to create a smooth ramp across the map. Discriminatory power is generated by the contrast of these interpolated hues, thus their selection requires careful consideration and evaluation.
-}
-
-\begin{figure}
-\includegraphics[width=\linewidth]{pics/Ware17.png}
-\caption{\DIFaddFL{This chart by Ware et al \mbox{%DIFAUXCMD
-\cite{Ware2019} }\hskip0pt%DIFAUXCMD
-illustrates the discriminatory at points across the colormap. The abbreviations, left to right: R - }\huewheel\DIFaddFL{; CW - }\coolwarm\DIFaddFL{; ECW - }\textit{\DIFaddFL{Extended Cool Warm}}\DIFaddFL{; BOD = }\blueorange\DIFaddFL{; VI - }\textit{\DIFaddFL{viridis}}\DIFaddFL{; G2 - }\textit{\DIFaddFL{grayscale}}\DIFaddFL{; GR - }\textit{\DIFaddFL{green-red}}\DIFaddFL{. }}
-\label{Ware}
-\end{figure}
-
-\DIFadd{Ware tested the internal contrast levels of commonly used colormaps. The results, shown in Figure~\ref{Ware}, graph the amount of contrast across the colormaps. It illustrates the uneven contrast distribution of }\huewheel\DIFadd{, the more consistent higher level of contrast in both }\blueorange \DIFadd{and }\textit{\DIFadd{Extended Cool Warm}} \DIFadd{and the shortcomings of other standards. 
-}
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{Final_Pics/HSV.png}
-\caption{\DIFaddFL{These visualizations are slices through magnetosphere around Ganymede, illustrating of Artistic Color Contrast Theory applied to data, left to right:  value or luminance contrast; saturation contrast; hue contrast; and a combination of hue, saturation, luminance, analogous contrast and cool - warm contrast.}}
-\label{contrast}
-\end{figure*}
-
-\DIFadd{Artistic Color Theory, used and demonstrated in paintings since the Renaissance, identifies seven types of color contrast ~\mbox{%DIFAUXCMD
-\cite{Itten}}\hskip0pt%DIFAUXCMD
-.  Contrast of hue, saturation, and luminance are familiar as they align with parameters of HSL color space. The remaining four are: cool-warm contrast; complimentary contrast, both involving colors on opposite sides of the color wheel; simultaneous contrast at play in the }\huewheel \DIFadd{colormap; and contrast of extension which speaks to balance of the area covered by specific hues. Colormaps with high discriminatory power employ multiple types of contrast across the }\DIFaddend map. \DIFdelbegin \DIFdel{Consequently, there is no such thing as the perfect color map. 
-Our default colormap needs to be a jack of all trades even if }\DIFdelend \DIFaddbegin \DIFadd{Looking at Figure~\ref{Larsen3}, }\huewheel \DIFadd{relies on hue and simultaneous contrast, }\coolwarm \DIFadd{narrows the hue range but gains contrast by adding two cropped luminance ranges. Fast, like }\huewheel \DIFadd{includes a wide range of hue, a range of saturation levels, two robust luminance ranges and complimentary contrast created by the inclusion of blue and orange hues. When constructing colormaps there are always trade-offs about which types and how much contrast should be included. The goal is to maximize the contrast between the internal hues, while maintaining harmony across the colormap. 
-}
-
-\DIFadd{Figure~\ref{contrast} illustrates the default colormaps and the types of color contrast discussed above, applied to a data simualtion bow waves in Ganymede's magnetosphere. We clipped the data range to concentrate the contrast in the bow waves, the area of interest. 
-}
-
-%DIF > In the top row, left to right; \huewheel, demonstrating the need for internal contrast across the  data range of interest; \coolwarm; showing smooth transitions but overall low discriminatory power; \textit{Extended Cool Warm}, providing additional detail by extending the value range; \blueorange, adding additional hue range contrast; \fast, decreasing value and saturation which enables smoother transitions. The bottom row illustrates the types of contrast in isolation, left to right. Left, the double rainbow configuration is used in order to provide greater feature resolution, which it does, however it amplifies the simultaneity contrast, defined by the visual vibration between fully saturated hues. 
-
-\DIFadd{The next three images illustrate hue, saturation and value contrast: red and blue; saturated warm hues against a muted tan hue; black and white; and on right, multiple types on contrasts are combined: hue, the range of cool colors in the blue green ramp; saturation, the saturated cool hues with the muted tan hue; luminance, the dark greens and blues against the light tan; and a subtle cool warm contrast between the cool blue to green range and the warm yellow tan in the upper range.
-}
-
-
-\DIFadd{Selecting a colormap best suited to specific tasks, datasets and data distributions is key to maximizing the capability of color to translate data, however, it is a time-consuming process. Creating custom colormaps such as the one in Figure~\ref{contrast} requires time and color expertise.  
-Even scientists who have taken our color tutorials report that while they understand the value of custom colormaps, and have devoted time to customizing maps for their data, they report that }\DIFaddend it is a \DIFdelbegin \DIFdel{master at none}\DIFdelend \DIFaddbegin \DIFadd{challenging process that often does not produce improvements on the default or other readily available options}\DIFaddend . 
-
-
-\DIFdelbegin \section{\DIFdel{CONSTRUCTING A NEW DEFAULT}}
-%DIFAUXCMD
-\addtocounter{section}{-1}%DIFAUXCMD
-\DIFdelend %DIF > For this reason, default colormaps need to be constructed to address the needs of a wide range of data types and distributions. Given that color is our primary means of revealing the data, the default colormap is a critical component of any visualization program. 
-
-
-
-
-%DIF < \begin{figure}
-%DIF < \centerline{\includegraphics[width=16pc]{pics/Maps2.png}}
-%DIF < \caption{The \huewheel and \coolwarm colormaps.}
-%DIF < \label{r and cw}
-%DIF < \end{figure}
-%DIF > The \huewheel colormap provided adequate discriminatory power when the range of data is small and detail is not required. However, as the data grows, the discriminatory power within colormaps needs to be increased to keep pace. 
-
-The \DIFaddbegin \DIFadd{most common request we receive from scientists is higher feature resolution, a property driven by the internal contrast levels within the colormap. Larger numbers of control points enable one to build higher levels of internal contrast, however they disrupt the ease of adjusting the map to align with specific data.  }\fast \DIFadd{has nine control point, balancing the conflicting interests. Future work includes addressing this trade - off by an automating the re-scaling on the control point distribution.
-}
-
-
-
-%DIF > It is worth noting that colormaps with larger numbers of control points are able to attain greater discriminatory power due to the greater control of hues sequences. However, here we have limited the number of control points as they make it difficult to adjust the hue distribution to meet the needs of your data while maintaining the even progression of contrast distribution. 
-
-\begin{figure}[t]
-\includegraphics[width=\columnwidth]{Final_Pics/30F_combo.png}
-\centering
-\caption{\DIFaddFL{CCC-Tool's colormap construction interface showing the control points of }\fast \DIFaddFL{\mbox{%DIFAUXCMD
-\cite{Nardini2021}}\hskip0pt%DIFAUXCMD
-. Top to bottom: HSL control points; LAB control points and the optimization function we used to determine the level of local discriminatory power.}}
-\label{CCC1}
-\end{figure}
-
 \section{\DIFadd{CONSTRUCTING A NEW DEFAULT}}
 \DIFadd{The }\DIFaddend origins of the new default color map arise from a collaboration between climate scientists, visualization experts, and visual artists~\cite{Samsel2015}.
 The team found that the existing default colors do not reveal enough detail within the high-resolution data they use.
 This collaboration engendered the \blueorange colormap (Figure~\ref{fig:design:blueorange}), which better satisfies the needs of the climate scientists~\cite{Samsel2015:SC}.
 This colormap is built on the same principles as the \coolwarm colormap (Figure~\ref{fig:design:coolwarm}) but \DIFdelbegin \DIFdel{with expanded ranges of contrast using more }\DIFdelend \DIFaddbegin \DIFadd{expanded the internal contrast incorporating longer paths through }\DIFaddend hue, saturation, and luminance\DIFaddbegin \DIFadd{, a principal well documented for increasing internal contrast \mbox{%DIFAUXCMD
 \cite{Ware2023}}\hskip0pt%DIFAUXCMD
-}\DIFaddend .  
+}\DIFaddend .
 
 
 %DIF < % Our improvement to the default ParaView colormap was an iterative process that is based on Blue Orange diverging \cite{Samsel2015:SC}, a colormap built on the same principles as the \coolwarm colormap but with expanded ranges of contrast of hue, saturation and luminance.
 %DIF < % \fast, the new default in ParaView, is refined to meet the needs of the broader scientific community and adhere to the criteria above.
 %DIF < % The iterations are shown in Figure \ref{4maps}.
-\DIFaddbegin \begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{Final_Pics/Compare22.png}
-  \caption{
-    \DIFaddFL{Iterative design from the }\blueorange \DIFaddFL{colormap, left, to our final design of }\fast \DIFaddFL{(E).
-    The impact of each iteration is demonstrated on two types of data: streamlines of wind from a fire simulation (LANL), and volumetric data of smoke from the same fire simulation.}}
-\label{fig:iterations}
-\end{figure*}
-\DIFaddend 
-
-
-%DIF < \subsection{The Blue--Orange Diverging}
 \DIFdelbegin %DIFDELCMD < 
+
+%DIFDELCMD < %%%
+%DIF < \subsection{The Blue--Orange Diverging}
+%DIFDELCMD < 
 
 %DIFDELCMD < %%%
 %DIF < % \begin{figure}[h!]
@@ -376,12 +429,12 @@ This colormap is built on the same principles as the \coolwarm colormap (Figure~
 %DIFDELCMD <     \includegraphics[width=\linewidth]{map-cool-to-warm}
 %DIFDELCMD <     \vspace{-1.4\baselineskip}
 %DIFDELCMD <     %%%
-%DIFDELCMD < \caption{%
-{%DIFAUXCMD
-\DIFdelFL{Original }%DIFDELCMD < \coolwarm %%%
-\DIFdelFL{coolwarm.}}
-    %DIFAUXCMD
-%DIFDELCMD < \label{fig:design:coolwarm}
+\DIFdelendFL \DIFaddbeginFL \begin{figure}[t]
+\includegraphics[width=\columnwidth]{Final_Pics/30F_combo.png}
+\centering
+\DIFaddendFL \caption{\DIFdelbeginFL \DIFdelFL{Original }%DIFDELCMD < \coolwarm %%%
+\DIFdelFL{coolwarm}\DIFdelendFL \DIFaddbeginFL \DIFaddFL{CCC-Tool's colormap construction interface showing the control points of }\fast\DIFaddendFL . \DIFaddbeginFL \DIFaddFL{Top to bottom: HSL control points; LAB control points and the optimization function we used to determine the level of local discriminatory power.}\DIFaddendFL }
+\DIFdelbeginFL %DIFDELCMD < \label{fig:design:coolwarm}
 %DIFDELCMD <   \end{subfigure}\\[4pt]
 %DIFDELCMD <   \begin{subfigure}{\linewidth}
 %DIFDELCMD <     \includegraphics[width=\linewidth]{map-blue-orange-diverging}
@@ -427,15 +480,31 @@ This colormap is built on the same principles as the \coolwarm colormap (Figure~
   }}
   %DIFAUXCMD
 %DIFDELCMD < \label{fig:designs}
-%DIFDELCMD < \end{figure}
-%DIFDELCMD < 
-
 %DIFDELCMD < %%%
-\DIFdelend The \blueorange colormap improves on the discriminating power of \coolwarm by increasing the range of all available color channels without violating robustness to colorblindness.
+\DIFdelendFL \DIFaddbeginFL \label{CCC1}
+\DIFaddendFL \end{figure}
+
+\DIFaddbegin \begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{Final_Pics/Compare22.png}
+  \caption{
+    \DIFaddFL{Iterative design from the }\blueorange \DIFaddFL{colormap (left) to our final design of }\fast \DIFaddFL{(right).
+    The impact of each iteration is demonstrated on two types of data: streamlines of wind from a fire simulation, and volumetric data of smoke from the same fire simulation.}}
+\label{fig:iterations}
+\end{figure*}
+
+
+\DIFaddend The \blueorange colormap improves on the discriminating power of \coolwarm by increasing the range of all available color channels without violating robustness to colorblindness.
 First, the brightness range is expanded by dropping the brightness at each end.
 This increases the luminance profile, which is known to be the most powerful channel for visual discrimination, particularly for high-frequency data \cite{Ware2019}.
-The hue range is also expanded by\DIFaddbegin \DIFadd{: }\DIFaddend mixing green into the \DIFdelbegin \DIFdel{lighter colorsand }\DIFdelend \DIFaddbegin \DIFadd{light cool colors; yellow and orange into to light warm range; and }\DIFaddend moving the darker colors toward purple \DIFaddbegin \DIFadd{and maroon}\DIFaddend .
-The saturation is also significantly increased across the color map to bring more vibrancy and \DIFaddbegin \DIFadd{to }\DIFaddend more clearly distinguish between the hues.
+The hue range is also expanded by
+\DIFaddbegin \begin{inparaenum}[(1)]
+\item \DIFaddend mixing green into the \DIFdelbegin \DIFdel{lighter colorsand }\DIFdelend \DIFaddbegin \DIFadd{light cool colors,
+}\item \DIFadd{mixing yellow and orange into to light warm range, and
+}\item \DIFaddend moving the darker colors toward purple \DIFdelbegin \DIFdel{.
+}\DIFdelend \DIFaddbegin \DIFadd{and maroon.
+}\end{inparaenum}
+\DIFaddend The saturation is also significantly increased across the color map to bring more vibrancy and \DIFaddbegin \DIFadd{to }\DIFaddend more clearly distinguish between the hues.
 User studies like that in Figure~\ref{Ware}
 show the \blueorange colormap to be better than the original \coolwarm colormap and overall one of the best performing colormaps \cite{Ware2017,Ware2019,Turton2017}.
 
@@ -464,18 +533,23 @@ Because it was created with a narrow focus of customers, it has some characteris
 
 
 %DIF < \begin{figure*}[htb]
-\DIFaddbegin \DIFadd{Colormap construction is an iterative process. We moved through over 50 versions to arrive at }\fast\DIFadd{. Figure~\ref{CCC1} contains the CCC-Tool interfaces used in the process of iteration: adjusting the control points in HSV (top); comparing the HSV coordinates to the control point graph in LAB space (middle); checking for equal and smooth distributions of the hues; and turning to the Optimization tab to check the local speed and contrast distribution (bottom). A change in one section of the map often impacts another, driving the need for another iteration.
+\DIFaddbegin \DIFadd{Colormap construction is an iterative process.
+We moved through over 50 versions to arrive at }\fast\DIFadd{.
+Figure~\ref{CCC1} contains the CCC-Tool interfaces~\mbox{%DIFAUXCMD
+\cite{Nardini2021} }\hskip0pt%DIFAUXCMD
+used in the process of iteration.
+This tool simplifies many processes involved in building colormaps including adjusting the control points in HSV (top), comparing the HSV coordinates to the control point graph in LAB space (middle), checking for equal and smooth distributions of the hues, and turning to the Optimization tab to check the local speed and contrast distribution (bottom).
+A change in one section of the map often impacts another, driving the need for another iteration.
 %DIF > in which the  section of CCC-Tool and by comparing the HSV space control points which enable manipulation according to artistic color theory and LAB space, examining the plots for smoothness. Then the map is applied to four data sets: points, streamlines, volumetric data and a combination.
 }
 
-
-
-\textbf{\DIFadd{Ken, I think this is redundant but take a look.}}
+%DIF > \fs{Ken, I think this is redundant but take a look.}
+%DIF > \km{Agreed. This does feel repetative.}
 %DIF > Figure~\ref{CCC1} shows the control points of \fast in the CCC-Tool\cite{Nardini2021} interface. We start by selecting and adjusting the control points in HSV space (left) as there the hues are intuitively adjustable. Once we are close to a the desired colormap, its control points are reviewed in CIElab (middle) which is useful for tuning the perceptual consistency of the map. In order to check the strength and distribution of the discriminatory power we review in the optimization metrics (bottom) section.
 
 
-\DIFadd{Implementing the }\textit{\DIFadd{Criteria}} \DIFadd{exposes the inherent linkage and impacts. For example increasing smoothness decreases feature resolution but is important for minimizing artifacts. The iterative process involves balancing the smoothness, equal distribution of luminance, smooth hue transitions, as well as identify a path through turquoise and fuchsia, awkward transitions in digital colorspace. Like yellow, in their pure form they are lighter crisp. When darkened, they quickly become muddy, obscuring the hue.
-}
+%DIF > \km{This paragraph also sounds repetative and it feels very awkwardly phrased. I think it will be more clear to just jump into the description of the \blueorange edits.}
+%DIF > Implementing the \textit{Criteria} exposes the inherent linkage and impacts. For example increasing smoothness decreases feature resolution but is important for minimizing artifacts. The iterative process involves balancing the smoothness, equal distribution of luminance, smooth hue transitions, as well as identify a path through turquoise and fuchsia, awkward transitions in digital colorspace. Like yellow, in their pure form they are lighter crisp. When darkened, they quickly become muddy, obscuring the hue.
 
 
 %DIF > \begin{figure}[htb]
@@ -501,7 +575,7 @@ Because it was created with a narrow focus of customers, it has some characteris
 %DIF <     Our final \fast colormap (right) smooths out this middle point.
  %DIF > %The colors at the ``dark'' ends of the \coolwarm colormap (left) are kept bright enough to easily discern shading.
     %DIF > The \blueorange colormap (middle) becomes too dark perceive shape.
-    \DIFaddbegin 
+\DIFaddbegin 
 
 
 %DIF >  \begin{figure*}[t]
@@ -512,11 +586,6 @@ Because it was created with a narrow focus of customers, it has some characteris
 %DIF <   \label{fig:smoothness}
 %DIF > \label{fig:HOW}
 %\end{figure*}
-\DIFaddbegin 
-
-
-\DIFadd{Figure~\ref{fig:CFCC1} illustrates the process of modifying colormaps.  
-}\DIFaddend 
 
 
 \DIFdelbegin %DIFDELCMD < \begin{figure*}[htb]
@@ -535,9 +604,11 @@ Because it was created with a narrow focus of customers, it has some characteris
 %DIFAUXCMD
 %DIFDELCMD < \label{fig:smoothness}
 %DIFDELCMD < \end{figure*}
-%DIFDELCMD < 
+%DIFDELCMD < %%%
+\DIFdelend %DIF > Figure~\ref{fig:CCC1} illustrates the process of modifying colormaps.
 
-%DIFDELCMD < \begin{figure}[htb]
+
+\DIFdelbegin %DIFDELCMD < \begin{figure}[htb]
 %DIFDELCMD <  %%%
 %DIF <  \centering
   %DIFDELCMD < \includegraphics[width=.15\textwidth]{shading-cool-warm}
@@ -559,28 +630,26 @@ Because it was created with a narrow focus of customers, it has some characteris
 %DIFDELCMD < 
 
 %DIFDELCMD < %%%
-\DIFdel{First, there is a strong focal point in the center where the map brightness peaks at white.
-This peak creates a distinct line across the surface as can be seen in Figure~\ref{fig:smoothness}.  
-This may be desirable for data where the middle of the range has a value of specific importance, but }\DIFdelend \DIFaddbegin \DIFadd{In Figure~\ref{fig:iterations}, on the left, }\blueorange\DIFadd{, illustrates the strong white focal point %DIF > generated by the low saturation level. It is illustrated on data in Figure~\ref{fig:iterations}.
-While valuable for designating the middle point of the data, }\DIFaddend it is imperfect for general data and violates the smoothness characteristic we desire.
+\DIFdel{First, there is a strong }\DIFdelend \DIFaddbegin \blueorange\DIFadd{, produces a strong white }\DIFaddend focal point in \DIFdelbegin \DIFdel{the center where the map brightness peaks at white. This peak creates a distinct line across the surface as can be seen }\DIFdelend \DIFaddbegin \DIFadd{its center as demonstrated in Figure~\ref{fig:iterations}, on the left. %DIF > generated by the low saturation level.
+It is illustrated on data }\DIFaddend in Figure~\DIFdelbegin \DIFdel{\ref{fig:smoothness}.
+This may be desirable for data where the middle of the range has a value of specific importance, but }\DIFdelend \DIFaddbegin \DIFadd{\ref{fig:iterations}.
+Although valuable for designating the middle point of the data, }\DIFaddend it is imperfect for general data and violates the smoothness characteristic we desire.
 To correct for this, we \DIFdelbegin \DIFdel{smooth the transition of brightness and saturation through the center.
 That said, we do not make this transition perfectly smooth as doing so would drop the discriminability in this section.
 We see this as one of the problems with discriminability in the }%DIFDELCMD < \coolwarm %%%
-\DIFdel{colormap, so we compromiseon a mostly smooth transition .
-}\DIFdelend \DIFaddbegin \DIFadd{lowered the luminance at that point and raised the saturation slightly, center.  }\fast\DIFadd{, on the right, is the compromise. Ideally we would make a perfectly smooth transition in the center but this lowers the discrimination power in the mid-section. The values on the end section are a compromise between discriminatory power and clarity when shadows are present. The exchanges are further detailed in Figure\ref{Matrix}.
-}\DIFaddend 
+\DIFdel{colormap, so we compromise on a mostly smooth transition.
+}%DIFDELCMD < 
 
-
-
-\DIFdelbegin \DIFdel{Second, the dark ends of the }%DIFDELCMD < \blueorange %%%
+%DIFDELCMD < %%%
+\DIFdel{Second, the dark ends of }\DIFdelend \DIFaddbegin \DIFadd{lowered the luminance at that point and raised the saturation slightly as shown in }\DIFaddend the \DIFdelbegin %DIFDELCMD < \blueorange %%%
 \DIFdel{colormap can interfere with 3D shading as shown in Figure~\ref{fig:3d-shading}.
 %DIF < \fix{Ken, The best way to illustrate this is to build on the crushed can vis. I am happy to make the figure if you want to forward the state file you use or we can leave this out. } However that can be mitigated using lighting as shown in Figure \ref{wind3}.
 This is of little concern for the original customers who do not deal with complex shapes, but it is quite important for our general purpose map.
-This problem is corrected by trimming, brightening, and raising the saturation of the dark ends of the map. Again, we are making a compromise leaning more toward discriminability, making the shading just visible in the worst case of coloring everything by the darkest color. }\DIFdelend %DIF > The middle section, shows the decrease in luminance, to decrease the impact on 3D shading as shown in Figure~\ref{fig:3d-shading}.
-%DIF > This problem is corrected by trimming, brightening, and raising the saturation of the dark ends of the map.
-%DIF > Again, we are making a compromise leaning more toward discriminability, making the shading just visible in the worst case of coloring everything by the darkest color.
-%DIF > The right-hand section illustrates the increase of saturation in the mid-point to eliminate the white which is problematic when using a white background, common for publications.
+This problem is corrected by trimming, brightening, and raising the saturation of the dark ends of the map.
+Again, we are making a compromise leaning more toward discriminability, making the shading just visible in the worst case of coloring everything by the darkest color.
+}%DIFDELCMD < 
 
+%DIFDELCMD < %%%
 %DIF < \begin{figure*}
 %DIF < \centerline{\includegraphics[width=\textwidth]{3VolumeHistory2}}
 %DIF < \caption{
@@ -588,16 +657,29 @@ This problem is corrected by trimming, brightening, and raising the saturation o
 %DIF < }
 %DIF < \label{wind3}
 %DIF < \end{figure*}
-\DIFdelbegin \DIFdel{Based on these needed adjustments to the }%DIFDELCMD < \blueorange %%%
+\DIFdel{Based on these needed adjustments to the }%DIFDELCMD < \blueorange %%%
 \DIFdel{colormap, we constructed many candidate maps.
-A sample of these maps is shown in Figure~\ref{fig:iterations}, documenting the changes and illustrating 
+A sample of these maps is shown }\DIFdelend \DIFaddbegin \DIFadd{center of Figure~\ref{fig:iterations}.
+}\fast\DIFadd{, on the right, is the compromise.
+Ideally we would make a perfectly smooth transition in the center but this lowers the discrimination power in the mid-section.
+The values on the end section are a compromise between discriminatory power and clarity when shadows are present.
+The exchanges are further detailed }\DIFaddend in Figure~\DIFdelbegin \DIFdel{\ref{fig:iterations}, documenting the changes and illustrating 
 the impact.
-}\DIFdelend %DIF > Based on these needed adjustments to the \blueorange colormap, we constructed many candidate maps.
-%DIF > Figure~\ref{fig:iterations} renders these maps on data, documenting the changes and illustrating 
-%DIF > the impact.
-\DIFaddbegin 
+}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig:Matrix}.
+}
 
-\DIFaddend These maps were evaluated using $\Delta$E discriminability metric in \DIFdelbegin \DIFdel{CCC Tool \mbox{%DIFAUXCMD
+
+
+%DIF > The middle section, shows the decrease in luminance, to decrease the impact on 3D shading as shown in Figure~\ref{fig:3d-shading}.
+%DIF > This problem is corrected by trimming, brightening, and raising the saturation of the dark ends of the map.
+%DIF > Again, we are making a compromise leaning more toward discriminability, making the shading just visible in the worst case of coloring everything by the darkest color.
+%DIF > The right-hand section illustrates the increase of saturation in the mid-point to eliminate the white which is problematic when using a white background, common for publications.
+
+%DIF > Based on these needed adjustments to the \blueorange colormap, we constructed many candidate maps.
+%DIF > Figure~\ref{fig:iterations} renders these maps on data, documenting the changes and illustrating
+%DIF > the impact.
+
+\DIFaddend These maps were evaluated using \DIFaddbegin \DIFadd{the }\DIFaddend $\Delta$E discriminability metric in \DIFdelbegin \DIFdel{CCC Tool \mbox{%DIFAUXCMD
 \cite{Nardini2021}}\hskip0pt%DIFAUXCMD
 . %DIF <  I am removing the sentence below because I do not understand it. The reference is to Figure 2c, but the text seems to describe Figure 5. But if that is the case, it seems like it is just reiterating the previous sentence, in which case we can just remove it.
 %DIF < Figure~\ref{fig:design:iteration1} illustrates the evolution of \blueorange, left to \fast, right.
@@ -612,12 +694,13 @@ The first goal was to lower the center focal point and equalize the uniformity o
 \centering
 \includegraphics[width=\textwidth]{Final_Pics/TheMatrix.png}
 \caption{\DIFaddFL{Left to right are five datasets: ocean kinetic energy; wildfire wind; magnetic reconnection; combustion simulation; wildfire smoke. They are organized by the data characteristics: the two left columns contain data spanning the full range, relatively evenly; the middle column is noisy data that spans the full range but is concentrated in the mid-range; the right two columns contain data concentrated on the low end, 2D and 3D, in column four and five respectively. }}
-\label{Matrix}
+\label{fig:Matrix}
 \end{figure*}
 
 
 \DIFadd{Next}\DIFaddend , we sought to further smooth the center range as well as experiment with lightening the end values to address the shading concerns\DIFdelbegin \DIFdel{shown in Figure~\ref{fig:3d-shading}}\DIFdelend .
-We also added a yellow tint to the center values to prevent bright colors from blending into white backgrounds\DIFdelbegin \DIFdel{as }\DIFdelend \DIFaddbegin \DIFadd{, Both changes are }\DIFaddend shown in Figure~\DIFdelbegin \DIFdel{\ref{fig:middle-point}}\DIFdelend \DIFaddbegin \DIFadd{\ref{fig:iterations}}\DIFaddend . 
+We also added a yellow tint to the center values to prevent bright colors from blending into white backgrounds\DIFdelbegin \DIFdel{as shown in Figure~\ref{fig:middle-point}}\DIFdelend \DIFaddbegin \DIFadd{.
+Both changes are shown in the middle of Figure~\ref{fig:iterations}}\DIFaddend .
 
 
 \DIFdelbegin %DIFDELCMD < \begin{figure}[tb]
@@ -655,28 +738,44 @@ We also added a yellow tint to the center values to prevent bright colors from b
 
 %DIFDELCMD < %%%
 \DIFdelend \DIFaddbegin \DIFadd{. Here the transition toward fushsia became problematic. }\DIFaddend To compensate, we increased the saturation again\DIFaddbegin \DIFadd{, removed the purple }\DIFaddend and shifted the turquoise region toward the center to provide \DIFdelbegin \DIFdel{extra discriminationin this region}\DIFdelend \DIFaddbegin \DIFadd{the needed discrimination}\DIFaddend , resulting in the final \fast colormap shown \DIFdelbegin \DIFdel{in column E.
-This subtle increase in detail is visible in the 2D data of Figure~\ref{fig:iterations} while still maintaining a good middle point and 3D shading behavior}\DIFdelend \DIFaddbegin \DIFadd{on the right}\DIFaddend .
+This subtle increase in detail is visible in the 2D data }\DIFdelend \DIFaddbegin \DIFadd{on the right }\DIFaddend of Figure~\ref{fig:iterations}\DIFdelbegin \DIFdel{while still maintaining a good middle point and 3D shading behavior}\DIFdelend .
 
 %DIF < \fix{I removed a reference to Figure~\ref{fig:designs}, suggesting that those were the maps with candidates. As I recall, the refinement was pertubations of Figure~\ref{fig:design:iteration2} only. We used to have a figure for that. It got removed, but that's probably OK. (Ken)}
-These candidate colormaps manifest different balances of our criteria: the luminance range to balance discriminability and 3D shading\DIFdelbegin \DIFdel{, }\DIFdelend \DIFaddbegin \DIFadd{; }\DIFaddend different luminance adjustments at the \DIFdelbegin \DIFdel{centerpoint }\DIFdelend \DIFaddbegin \DIFadd{center point }\DIFaddend to balance uniformity and smoothness\DIFdelbegin \DIFdel{, }\DIFdelend \DIFaddbegin \DIFadd{; and }\DIFaddend different hue ranges to balance discriminability and order. 
+These candidate colormaps manifest different balances of our criteria: the luminance range to balance discriminability and 3D shading, different luminance adjustments at the \DIFdelbegin \DIFdel{centerpoint }\DIFdelend \DIFaddbegin \DIFadd{center point }\DIFaddend to balance uniformity and smoothness, \DIFaddbegin \DIFadd{and }\DIFaddend different hue ranges to balance discriminability and order.
 
 
 %DIF < Figure \ref{fig:iterations} illustrates the process of balancing maximum discriminatory power, uniformity and smoothness while maintaining robustness to 3D shading and colorblindness. Specifically, the changes made from left to right are: our starting point, blue-orange divergent; aiming for smooth uniform transitions across the colormap; further smoothing of the center range; increasing the discriminatory power by expanding both the value and saturation range across the colormap; maintaining the discriminatiory power at in the middle range as well as unifying and smoothing the transitions by shifting the hue distributions.
-\DIFdelbegin %DIFDELCMD < 
+%DIF > %\centering
+%DIF > \includegraphics [width=\textwidth]{Final_Pics/Shadow_lights_H.png}
+%DIF > \caption{Left to right, \coolwarm, \coolwarm with light added, \fast, \fast with light added.}
+%DIF >  \label{fig:3d-shading}
+%DIF > \end{figure*}
 
-%DIFDELCMD < %%%
-\DIFdel{Figure \ref{fig:iterations} illustrates the applications of these candidate colormaps to three types of data - continuous 2D data, streamlines, and volumetric data.
-}%DIFDELCMD < 
+\DIFdelbegin \DIFdel{Figure \ref{fig:iterations} illustrates the applications of these candidate colormapsto three types of data - continuous 2D data, streamlines, }\DIFdelend \DIFaddbegin \DIFadd{Colormaps for 3D surfaces have an added complexity.
+3D forms are principally defined by shading, but the brightness of a colormap can interfere with the interpretation of shading.
+%DIF > Figure~\ref{fig:Matrix}, right column, illustrates the issue.
+%DIF > In the mid-value range of the colormap they shift the value but do not disrupt our ability to see the forms.
+%DIF > In the low and high ends of the colormap, where the hues are the dark, shadows can prevent us from seeing the shape altogether.
+%DIF > Given that luminance is the most powerful contrast type, the sacrifice is significant.
+%DIF > Figure~\ref{Ware} details the impact on the discriminatory power.
+The right column in Figure~\ref{fig:Matrix} illustrates the interference of shading and colors in }\coolwarm\DIFadd{, }\blueorange\DIFadd{, }\fast\DIFadd{, and other colormaps.
+}\coolwarm\DIFadd{, second row, addresses this issue by not including darker blues and reds, but it does so at a cost of lowering the discriminatory power.
+%DIF > In the \coolwarm the 3D forms are clearer than but in visualizations showing the full range of the data, detail is lost.
+In contrast, the }\extendedcoolwarm \DIFaddend and \DIFdelbegin \DIFdel{volumetric data.
+}\DIFdelend \DIFaddbegin \blueorange \DIFadd{colormaps, third and fourth rows, have colors dark enough to completely hide the shape of objects they are applied to.
+As a compromise, }\fast \DIFadd{employs a wider span of the luminance range than }\coolwarm \DIFadd{but less than }\extendedcoolwarm \DIFadd{or }\blueorange\DIFadd{.
+%DIF > When using \fast, one can add a default light under the light inspector function, requiring only a box check, a much easier task than trying to increase the internal luminance range as that would require adding and adjusting individual control points.
+}\DIFaddend 
 
-%DIFDELCMD < %%%
+
 %DIF < Some colormaps performed slightly better on specific types of data: streamlines; volumes; 2D surfaces and point data.
 %DIF < The differences aligned with the density of the data and the background color.
 %DIF < Using this information, the team balanced the considerations between the types of data, user preferences and characteristics of the colormaps.
-%DIFDELCMD < 
+\DIFdelbegin %DIFDELCMD < 
 
 %DIFDELCMD < %%%
 %DIF < Once the colors of the map were agreed on, we made final adjustments for smoothness, uniformity, and discriminatory power.
-\DIFdelend Finally, a sequence of control points was chosen for a \DIFdelbegin \DIFdel{piecewise-linear }\DIFdelend \DIFaddbegin \DIFadd{piece wise-linear }\DIFaddend interpolation of colors in CIELAB space with a preference to minimize their number.
+\DIFdelend Finally, a sequence of control points was chosen for a piecewise-linear interpolation of colors in CIELAB space with a preference to minimize their number.
 In practice, users sometimes wish to modify a colormap to their purpose.
 For example, users may wish to adjust the colors to highlight particular regions of their scalar data.
 This cannot be done easily with larger numbers of control points, so we removed any control points where interpolation produces nearly identical results.
@@ -689,16 +788,10 @@ Our final design has nine control points as it is the minimum needed to produce 
 %DIF < % \caption{Colormap properties displayed in CCC Tool \cite{Nardini2021} for \coolwarm and \fast.}
 %DIF < % \label{Charts}
 %DIF < % \end{figure}
-%DIF > %\centering
-%DIF > \includegraphics [width=\textwidth]{Final_Pics/Shadow_lights_H.png}
-%DIF > \caption{Left to right, \coolwarm, \coolwarm with light added, \fast, \fast with light added.}
-%DIF >  \label{fig:3d-shading}
-%DIF > \end{figure*}
+\DIFdelbegin %DIFDELCMD < 
 
- \DIFaddbegin \DIFadd{Colormaps for 3D surfaces have an added complexity. Shadows define 3D forms. In the process they disrupt our ability to accurately identify the value encoded by the colormap. Figure~\ref{fig:Matrix}, right column, illustrates the issues. In the mid-value range of the colormap they shift the value but do not disrupt our ability to see the forms. In the low and high ends of the colormap, where the hues are the dark, shadows can prevent us from seeing the shape altogether. }\coolwarm \DIFadd{addresses this issue by not including darker range of blues and reds but it does so at a cost of lowering the discriminatory power. Given that luminance is the most powerful contrast type, the sacrifice is significant. }\fast \DIFadd{employs a wider span of the value range than }\coolwarm \DIFadd{but less than }\textit{\DIFadd{Extended Cool Warm}}\DIFadd{. Figure~\ref{Ware} details the impact on the discriminatory power. The right column in Figure~\ref{fig:Matrix} illustrates the interference of shadows and hue values in }\coolwarm \DIFadd{and }\fast\DIFadd{. In the }\coolwarm \DIFadd{the 3D forms are clearer than but in visualizations showing the full range of the data, detail is lost.  When using }\fast\DIFadd{, one can add a default light under the light inspector function, requiring only a box check, a much easier task than trying to increase the internal luminance range as that would require adding and adjusting individual control points.
- }
-
-\DIFaddend \section{USER FEEDBACK}
+%DIFDELCMD < %%%
+\DIFdelend \section{USER FEEDBACK}
 
 %DIF <  Commenting out these two paragraphs. They cover the same ground as the last two paragraphs of the previous section, and neither has anything to do with user feedback.
 \DIFdelbegin %DIFDELCMD < 
@@ -720,11 +813,22 @@ Our final design has nine control points as it is the minimum needed to produce 
 \DIFdelend As we neared completion of the new colormap design, the development team wanted feedback from current users about these changes before being affected by them.
 Sandia National Laboratories has a strong ParaView user base and an active support team for them.
 The ParaView support team sent an email to the Sandia ParaView users informing them of planned changes and welcoming any feedback.
+\DIFaddbegin \DIFadd{The email elicited feedback with the following open-ended text: ``The ParaView team is debating changing the default, as shown below. Note that users can always change back to our current map and palette. If anyone has any opinions on changes, please send your thoughts back to us.''
+This was followed by a set of images comparing the }\coolwarm \DIFadd{colormap and an early version of }\fast \DIFadd{along with a potential change in background shade that was being considered.
+}\DIFaddend 
 
 Of the roughly 800 users receiving the email, 18 responded back with comments about the change of the default colormap from Cool to Warm to Fast.
 Of these, 15 expressed a clear preference for the new colormap.
-Only 1 preferred the original Cool to Warm colormap with the remaining 2 expressing no preference of one over the other.
-Although no formal study has been done, we see this as a clear general preference \DIFdelbegin \DIFdel{to }\DIFdelend \DIFaddbegin \DIFadd{for }\DIFaddend the new colormap.
+\DIFdelbegin \DIFdel{Only 1 preferred the original Cool to Warm colormapwith the remaining }\DIFdelend \DIFaddbegin \DIFadd{We made no attempt to quantify the rating of responses, but they ranged from very favorable (e.g., ``I’ll emphatically vote for the neutral gray background and FAST colormap.'' and ``I like the FAST colormap. Seems like it uses more of the color spectrum whereas the other only uses red, white, blue.'') whereas others only had a slight preference (e.g., ``I don’t have a strong opinion on the default color map; I would maybe lean towards the new one.'' and ``The new one does look a bit better, but the old one isn’t too bad either.'').
+}
+
+\DIFadd{Of the remaining 3 respondees, }\DIFaddend 2 \DIFdelbegin \DIFdel{expressing no preference}\DIFdelend \DIFaddbegin \DIFadd{did not express a strong preference.
+One stated, ``The new/proposed color map seems fine, the minima/maxima seem a little dark to me personally.''
+One respondee disapproved of any change but also would use neither colormap: ``I would never vote to change something that is working.  I also never ever use the default color map. I vote do not change.''
+Only one respondee gave a preference to the }\coolwarm \DIFadd{colormap citing issues with banding on some displays: ``The one thing I’ll point out is that in the attached image, there appears to be more banding of colors resulting in sharper steps visually (particularly in the bottom half of the image). Probably this is just an artifact, but aside from the increased contrast, it makes me prefer the images }[\DIFaddend of \DIFdelbegin \DIFdel{one over the other. }\DIFdelend \DIFaddbegin \coolwarm{}] \DIFadd{to the ones }[\DIFadd{of }\fast{}]\DIFadd{.''
+}
+
+\DIFaddend Although no formal study has been done, we see this \DIFaddbegin \DIFadd{overall }\DIFaddend as a clear general preference \DIFdelbegin \DIFdel{to }\DIFdelend \DIFaddbegin \DIFadd{for }\DIFaddend the new colormap.
 
 
 \DIFdelbegin %DIFDELCMD < \begin{figure*}[htb]
@@ -753,7 +857,7 @@ As measured by \DIFdelbegin \DIFdel{CCC Tool}\DIFdelend \DIFaddbegin \DIFadd{CCC
 All that said, we recognize that \fast%
 %DIF < , shown in Figure \ref{Ast},
 %DIF > , shown in Figure \ref{Larsen3},
-likely performs less well in general than the \blueorange colormap it is based on \DIFdelbegin \DIFdel{.
+likely performs less well \DIFdelbegin \DIFdel{in general }\DIFdelend \DIFaddbegin \DIFadd{with respect to discriminability }\DIFaddend than the \blueorange colormap it is based on \DIFdelbegin \DIFdel{.
 This is out of necessity }\DIFdelend \DIFaddbegin \DIFadd{as }\blueorange \DIFadd{includes a larger luminence range, being darker on the ends and going to white in the center.
 These changes were necessary in order }\DIFaddend to adjust for the smoothness and robustness to shading on 3D surfaces.
 
@@ -761,7 +865,7 @@ The \coolwarm colormap was designed about 15 years ago to move away from the \hu
 In the interim, multiple colormaps based on the hues of the rainbow that correct some of the problems of the \huewheel have been designed.
 More recent research suggests that added hues and more nameable colors can assist in color differentiations that are not otherwise explained by our perceptual color models \cite{Reda2021}.
 This leads some to suggest that perceptually correct colormaps based on rainbow colormaps might be favorable \cite{Ware2023}.
-Although the \fast colormap does not incorporate all rainbow hues, it does improve dramatically over the hues provided by \coolwarm\DIFdelbegin \DIFdel{as seen in the hue plots of Figure~\ref{Charts}}\DIFdelend . 
+Although the \fast colormap does not incorporate all rainbow hues, it does improve dramatically over the hues provided by \coolwarm\DIFdelbegin \DIFdel{as seen in the hue plots of Figure~\ref{Charts}}\DIFdelend .
 
 \fast also has more namable colors than its \coolwarm predecessor.
 Using the color categorization tendency metric proposed by Reda \cite{Reda2022}, \fast once again exceeds \coolwarm.
@@ -773,10 +877,49 @@ Thus, we are not ready to loop back around to the full hues of a rainbow.
 
 \section{CONCLUSION}
 
-Our final iteration of the new colormap, which we dub ``\fast,'' is demonstrated in Figure~\DIFdelbegin \DIFdel{\ref{Ast} }\DIFdelend \DIFaddbegin \DIFadd{\ref{Larsen3} }\DIFaddend as well as numerous other figures in this paper.
-This colormap is provided as one of the available colormaps in ParaView~5.12 and will become the default colormap in ParaView~5.13.
+Our final iteration of the new colormap, which we dub ``\fast,''\DIFaddbegin \footnote{\DIFadd{The name }\fast \DIFadd{is meaningless, but was chosen as it is reminiscent of other colormap names like }\colormap{Jet} \DIFadd{and }\turbo\DIFadd{.}} \DIFaddend is demonstrated in Figure~\DIFdelbegin \DIFdel{\ref{Ast} }\DIFdelend \DIFaddbegin \DIFadd{\ref{Larsen3} }\DIFaddend as well as numerous other figures in this paper.
+\DIFaddbegin \DIFadd{The colors are listed in Table~\ref{tab:colors}.
+}\DIFaddend This colormap is provided as one of the available colormaps in ParaView~5.12 and will become the default colormap in ParaView~5.13.
 
-Revisiting the criteria presented at the beginning of this paper, \DIFdelbegin \DIFdel{we feel there is a clear advantage of the new colormap}\DIFdelend \DIFaddbegin \DIFadd{evaluations and user feedback show the advantages of }\fast \DIFadd{over }\coolwarm \DIFadd{and other standard defaults. Figure~\ref{Matrix} provides comparisons of the criteria across five data sets}\DIFaddend .
+\DIFaddbegin \definecolor{fast0}{RGB}{ 14,  14, 120}
+\definecolor{fast1}{RGB}{ 62, 117, 207}
+\definecolor{fast2}{RGB}{ 91, 190, 243}
+\definecolor{fast3}{RGB}{175, 237, 234}
+\definecolor{fast4}{RGB}{229, 241, 196}
+\definecolor{fast5}{RGB}{244, 213, 130}
+\definecolor{fast6}{RGB}{237, 158,  80}
+\definecolor{fast7}{RGB}{204,  90,  41}
+\definecolor{fast8}{RGB}{150,  20,  30}
+
+\newcommand*{\colordemo}[1]{\colorbox{#1}{\phantom{X}}}
+
+\begin{table}[t]
+  \centering
+  \caption{
+    \DIFaddFL{Color values used for the }\fast \DIFaddFL{colormap control points.
+    These colors are intended to be interpolated in the CIELAB color space.
+    Note that these control points are not evenly distributed.
+    Pay mind to the interpolant x.
+  }}
+  \label{tab:colors}
+  \begin{tabular}{r@{\quad~( }r@{, }r@{, }r@{ )\quad~( }r@{, }r@{, }r@{ )\quad~}c}
+    \toprule
+    \multicolumn{1}{c@{\quad~\phantom{( }}}{x} & \multicolumn{3}{c@{\phantom{ )}\quad~\phantom{( }}}{RGB} & \multicolumn{3}{c@{ \phantom{)}\quad~}}{CIELAB} \\
+    \midrule
+    \DIFaddFL{0.00 }&  \DIFaddFL{14 }&  \DIFaddFL{14 }& \DIFaddFL{120 }&   \DIFaddFL{14.3 }&  \DIFaddFL{39.5 }& \DIFaddFL{-57.3 }& \colordemo{fast0} \\
+    \DIFaddFL{0.17 }&  \DIFaddFL{62 }& \DIFaddFL{117 }& \DIFaddFL{207 }&   \DIFaddFL{49.9 }&  \DIFaddFL{11.4 }& \DIFaddFL{-51.5 }& \colordemo{fast1} \\
+    \DIFaddFL{0.30 }&  \DIFaddFL{91 }& \DIFaddFL{190 }& \DIFaddFL{243 }&   \DIFaddFL{73.2 }& \DIFaddFL{-13.3 }& \DIFaddFL{-35.1 }& \colordemo{fast2} \\
+    \DIFaddFL{0.43 }& \DIFaddFL{175 }& \DIFaddFL{237 }& \DIFaddFL{234 }&   \DIFaddFL{89.7 }& \DIFaddFL{-19.9 }&  \DIFaddFL{-4.8 }& \colordemo{fast3} \\
+    \DIFaddFL{0.50 }& \DIFaddFL{229 }& \DIFaddFL{241 }& \DIFaddFL{196 }&   \DIFaddFL{93.2 }& \DIFaddFL{-11.3 }&  \DIFaddFL{20.4 }& \colordemo{fast4} \\
+    \DIFaddFL{0.59 }& \DIFaddFL{244 }& \DIFaddFL{213 }& \DIFaddFL{130 }&   \DIFaddFL{86.1 }&   \DIFaddFL{0.4 }&  \DIFaddFL{44.8 }& \colordemo{fast5} \\
+    \DIFaddFL{0.71 }& \DIFaddFL{237 }& \DIFaddFL{158 }&  \DIFaddFL{80 }&   \DIFaddFL{71.6 }&  \DIFaddFL{21.9 }&  \DIFaddFL{51.5 }& \colordemo{fast6} \\
+    \DIFaddFL{0.85 }& \DIFaddFL{204 }&  \DIFaddFL{90 }&  \DIFaddFL{41 }&   \DIFaddFL{52.1 }&  \DIFaddFL{42.6 }&  \DIFaddFL{48.5 }& \colordemo{fast7} \\
+    \DIFaddFL{1.00 }& \DIFaddFL{150 }&  \DIFaddFL{20 }&  \DIFaddFL{30 }&   \DIFaddFL{32.0 }&  \DIFaddFL{51.4 }&  \DIFaddFL{30.6 }& \colordemo{fast8} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\DIFaddend Revisiting the criteria presented at the beginning of this paper, \DIFdelbegin \DIFdel{we feel there is a clear advantage of the new colormap}\DIFdelend \DIFaddbegin \DIFadd{evaluations and user feedback show the advantages of }\fast \DIFadd{over }\coolwarm \DIFadd{and other standard defaults. Figure~\ref{fig:Matrix} provides comparisons of the criteria across five data sets}\DIFaddend .
 
 
 \DIFdelbegin %DIFDELCMD < \begin{figure}
@@ -800,10 +943,10 @@ Revisiting the criteria presented at the beginning of this paper, \DIFdelbegin \
 
 \begin{itemize}
 
-\item \emph{Discriminative powers} --
+\item \emph{Discriminative \DIFdelbegin \DIFdel{powers}\DIFdelend \DIFaddbegin \DIFadd{power}\DIFaddend } --
   \fast performs better on every color discriminability metric that we have available.
 \item \emph{Uniformity} --
-  The previous \coolwarm colormap has very little luminance change in its center leaving a region of colors that tend to get washed out (see Figure \DIFdelbegin \DIFdel{\ref{Larsen}}\DIFdelend \DIFaddbegin \DIFadd{\ref{Larsen3}}\DIFaddend ).
+  The previous \coolwarm colormap has very little luminance change in its center leaving a region of colors that tend to get washed out (see \DIFdelbegin \DIFdel{Figure \ref{Larsen}}\DIFdelend \DIFaddbegin \DIFadd{Figures \ref{Larsen3} and \ref{fig:Matrix}}\DIFaddend ).
   \fast retains more luminance variation at its apex to help maintain a uniform perceptual change in that region.
 \item \emph{Smoothness} --
   \fast sacrifices some smoothness at the center for gain in discrimination and uniformity, but the smoothness is close to \coolwarm and much better than \blueorange.
@@ -811,8 +954,13 @@ Revisiting the criteria presented at the beginning of this paper, \DIFdelbegin \
   \coolwarm and \fast use the same cues of luminance and warmth for color order.
 \item \emph{Robustness to shading on 3D surfaces} --
   \fast allows the end colors to become darker for greater discriminability.
-  This makes shapes a bit harder but still possible to discern in the worst case scenario of values all at one end of the colormap range (see Figure~\DIFdelbegin \DIFdel{\ref{fig:3d-shading}}\DIFdelend \DIFaddbegin \DIFadd{\ref{Matrix}, right column}\DIFaddend ).
-\item \emph{Robustness to colorblindness} --
+  This makes shapes a bit harder but still possible to discern in the worst case scenario of values all at one end of the colormap range (see Figure~\DIFdelbegin \DIFdel{\ref{fig:3d-shading}).
+  }\DIFdelend \DIFaddbegin \DIFadd{\ref{fig:Matrix}, right column).
+  Although dark surfaces can be reveled with brighter lighting, such bright colors could wash out light colors.
+  Requiring customized lighting is just pushing the problem back on the user again, so we discount this solution.
+  It is also conceivable that changes in lightness could obfuscate the shape.
+  Research for such an effect is lacking, but anecdotally we have not encountered such an occurrence.
+}\DIFaddend \item \emph{Robustness to colorblindness} --
   Colorblindness was always kept in mind when designing \fast.
   Figure~\ref{fig:colorblindness} shows that \fast responds just as well to common forms of colorblindness as does \coolwarm.
 \item \emph{Aesthetically pleasing} --
