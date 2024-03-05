@@ -25,6 +25,12 @@
 \usepackage{color}
 \newcommand*{\fix}[1]{\textbf{\emph{\textcolor{red}{#1}}}}
 
+\definecolor{km}{RGB}{105, 41, 197}
+\definecolor{fs}{RGB}{17, 146, 233}
+
+\newcommand*{\km}[1]{\textcolor{km}{\emph{\textbf{#1} -- KM}}}
+\newcommand*{\fs}[1]{\textcolor{fs}{\emph{\textbf{#1} -- FS}}}
+
 \usepackage{booktabs}
 \usepackage{paralist}
 \usepackage{subcaption}
@@ -63,7 +69,7 @@ ParaView is one of the most prominent software tools for scientific visualizatio
 Color is a primary conduit to visually map data to its representation and thus enable investigation and interpretation of the data.
 Colormap selection has a significant impact on the data revealed; its design and selection is a critical aspect of scientific data visualization.
 A common choice for a user is the program's default colormap, so careful consideration of this default is consequential.
-Although the current default colormap in ParaView, a succession of hues from cool blue to warm red, has served the community well, research shows that more nuanced colormap configurations increase discriminability while maintaining other critical metrics. 
+Although the current default colormap in ParaView, a succession of hues from cool blue to warm red, has served the community well, research shows that more nuanced colormap configurations increase discriminability while maintaining other critical metrics.
 These findings inspire us to revisit and update the default colors in ParaView.
 Here we present a new ParaView default colormap, the criteria and methods of development, and example visualizations and analytic metrics.
 \end{abstract}
@@ -73,12 +79,12 @@ Here we present a new ParaView default colormap, the criteria and methods of dev
 \chapteri{T}he colormap is a critical part of any pseudocolor visualization.
 A colormap is a simple function that maps numbers to colors, which can then be applied to visually categorize data, highlight data, or represent a continuous distribution of values over a surface or volume.
 
-The colormap is most recognizable to users as a bar painted with a transition of colors representing a range of numbers from low to high.  
-When presented with these colors, a viewer makes the reverse translation from colors back to numbers. The efficacy of a pseudocolor visualization depends on a person's ability to perceive and translate these colors.  
+The colormap is most recognizable to users as a bar painted with a transition of colors representing a range of numbers from low to high.
+When presented with these colors, a viewer makes the reverse translation from colors back to numbers. The efficacy of a pseudocolor visualization depends on a person's ability to perceive and translate these colors.
 
 A typical user is unlikely to be a color expert, so it is imperative that the visualization system provide sound options that accurately and impartially represent the data. It is particularly important to have a good default colormap that is used in the absence of any further configuration. Many users will have neither the inclination nor the proficiency to change the default colors selected by the visualization system.
 
-  
+
 \begin{figure*}[htb]
 \centering
 \includegraphics[width=\textwidth]{Final_Pics/Larsen_the3.png}
@@ -100,10 +106,10 @@ This colormap is formed by interpolating along the hues, typically from blue to 
 Although the criticisms of the \huewheel colormap were known even at the inception of the ParaView software~\cite{Rogowitz1998}, there were few practical alternatives.
 It was when Borland and Taylor~\cite{Borland2007} admonished ParaView and other visualization programs that the developers became motivated to improve their default colormap design.
 After adapting the best recommendations available at the time and drawing inspiration from the GIS community, which had extensive color map recommendations~\cite{Brewer2003}, the team settled on a \coolwarm colormap design~\cite{Moreland2009} shown in the center panel of Figure~\ref{Larsen3}.
-This map adopts a diverging colormap approach with a smoothed luminance profile in the transition between hues. 
+This map adopts a diverging colormap approach with a smoothed luminance profile in the transition between hues.
 Since the introduction of the \coolwarm colormap as the default in ParaView, many practitioners have proposed alternate maps~\cite{Samsel2015}, and multiple perceptual studies have been conducted to evaluate these colormaps~\cite{Ware2017}.
 Some show that the \coolwarm colormap performs less well than its alternatives, particularly with respect to its discriminability~\cite{Ware2017,Ware2019}.
-Consequently, the ParaView development team has been motivated to revisit its default colormap. 
+Consequently, the ParaView development team has been motivated to revisit its default colormap.
 
 This paper describes the processes we undertook to design a new default colormap for ParaView, which we dub ``\fast'', shown on the right side of Figure~\ref{Larsen3}.
 We describe the criteria we used in designing this colormap: the iterative design process; refining the hue selection; smoothing the transitions; distributing the final colormap to get feedback from current users; evaluation using perceptual models; and making the final refinements.
@@ -114,7 +120,7 @@ We describe the criteria we used in designing this colormap: the iterative desig
 There are many guidelines for colormaps proposed in the literature. We use the collection compiled by Bujack et al.~\cite{Bujack2018} as a guide. The characteristics most important to us, in no particular order, are as follows.
 
 \begin{itemize}
-    
+
 \item \emph{Discriminative power} --
   We wish to maximize the number of just noticeable differences in the colormap to make subtle differences visible.
 \item \emph{Uniformity} --
@@ -135,7 +141,7 @@ There are many guidelines for colormaps proposed in the literature. We use the c
 
 \end{itemize}
 
-The Color Theory section below details relevant artistic color theory illuminates why these characteristics are not independent, and improvements in one property could degrade the effectiveness in others. 
+The Color Theory section below details relevant artistic color theory illuminates why these characteristics are not independent, and improvements in one property could degrade the effectiveness in others.
 
 %For example, issues with order, 3D surfaces, or colorblindess are typically resolved by limiting the colors used, but reducing the number of colors lowers the discriminative power of the map. Consequently, there is no such thing as the perfect color map. Our default colormap needs to be a jack of all trades even if it is a master at none.
 
@@ -143,8 +149,8 @@ The Color Theory section below details relevant artistic color theory illuminate
 
 \section {COLORMAPS \& ARTISTIC COLOR THEORY}
 
-Colormaps come in a wide variety, categorized loosely by their luminance distribution and number of ramps. 
-%and designed to address different visualization tasks, data distributions as well as the needs and conventions of the science domain. 
+Colormaps come in a wide variety, categorized loosely by their luminance distribution and number of ramps.
+%and designed to address different visualization tasks, data distributions as well as the needs and conventions of the science domain.
 General categories include discrete, linear, diverging, isoluminent, and more custom constructions such as wave maps.
 Discrete colormaps contain specific hues without interpolation between hues.
 Linear maps, colormaps that span one value ramp, enable intuitive identification of scalar values and equalized attention across the visualization but contain lower discriminatory power due to the monotonic luminance profile ramp and a narrow range of hues.
@@ -166,40 +172,35 @@ The remaining two are
 \item contrast of extension, which speaks to balance of the area covered by specific hues.
 \end{inparaenum}
 
-Colormaps translate data, not through the colors themselves, but through the \textit{contrast} between perceivable colors within the colormap. In discrete colormaps it is the contrast between the individual colors that reveals the data. Scalar colormaps are smooth ramps generated by selecting a set of control points and then interpolating between the control points in CIELAB colorspace. The discriminatory power in a colormap relies on the contrast across its entire path through colorspace, which includes both the control points and the colors on the path through color space. 
+Colormaps translate data, not through the colors themselves, but through the \textit{contrast} between perceivable colors within the colormap. In discrete colormaps it is the contrast between the individual colors that reveals the data. Scalar colormaps are smooth ramps generated by selecting a set of control points and then interpolating between the control points in CIELAB colorspace. The discriminatory power in a colormap relies on the contrast across its entire path through colorspace, which includes both the control points and the colors on the path through color space.
 
 Figure~\ref{contrast} illustrates three types of color contrast as applied to data from a simulation of bow waves in Ganymede's magnetosphere. The data range is clipped to concentrate the contrast in the bow waves, which is the area of interest. The figure contains three divergent colormaps which illustrate specific types of contrast - hue, saturation and luminance. The hue contrast is between red and blue; saturated, warm hues against a muted tan hue; luminance, black and white. On right, multiple types on contrasts are combined: hue, the range of cool colors in the blue green ramp; saturation, the saturated cool hues with the muted tan hue; luminance, the dark greens and blues against the light tan; and a subtle cool warm contrast between the cool blue to green range and the warm yellow tan in the upper range. The luminance alone provides clear differentiation of the large features but does not capture the nuance shown in the saturation contrast example.
 
-\fix{I am thoroughly confused by this description. The description in the text does not match the description in the caption. Is this meant to say that the first image shows hue contrast, the second saturation contrast, etc.? If so, how is the left image not also showing, say, cool-warm contrast? Why is the third image (luminance contrast?) two solid colors but the others gradients?}
+\km{I am thoroughly confused by this description. The description in the text does not match the description in the caption. Is this meant to say that the first image shows hue contrast, the second saturation contrast, etc.? If so, how is the left image not also showing, say, cool-warm contrast? Why is the third image (luminance contrast?) two solid colors but the others gradients?}
 
-\\
-\fix{The point of this figure is to show the primary types of contrast - hue, sat and ,value, applied to data. People understand the verbal description of contrast types but it I find that in order to get buy in you need to illustrate the concepts on data. 
-I am always surprised when I get asked things like what is a muted color.what are the cool colors, etc. This figure was to lay the foundation for understanding what those mean. Yes, they all have multiple types of contrast but that cant be avoided.}\\
-\\
+\fs{The point of this figure is to show the primary types of contrast - hue, sat and ,value, applied to data. People understand the verbal description of contrast types but it I find that in order to get buy in you need to illustrate the concepts on data.
+I am always surprised when I get asked things like what is a muted color.what are the cool colors, etc. This figure was to lay the foundation for understanding what those mean. Yes, they all have multiple types of contrast but that cant be avoided.}
 
-\fix{If the last image is a combination of contrasts, why not show \fast? }
-\\
+\km{If the last image is a combination of contrasts, why not show \fast? }
 
-\fix{Fast is a compromise and thus does not present as clear an example of the impact of multiple types of contrast.}
-\\
+\fs{Fast is a compromise and thus does not present as clear an example of the impact of multiple types of contrast.}
 
-\fix{And what are the images supposed to demonstrate? Are some showing detail not seen in the others?}\\
+\km{And what are the images supposed to demonstrate? Are some showing detail not seen in the others?}
 
-\fix{to some degree yes but the point is to help them make the translation between adjusting the characteristics of a colormap and how that impacts what you see. 
+\fs{to some degree yes but the point is to help them make the translation between adjusting the characteristics of a colormap and how that impacts what you see.}
 
 
-None of these issues are hills I want to die on. Happy to make changes. It would be easier to discuss as we approach the topic differently.}
+\fs{None of these issues are hills I want to die on. Happy to make changes. It would be easier to discuss as we approach the topic differently.}
 
 
-Selecting a colormap best suited to specific tasks, datasets, and data distributions is key to maximizing the capability of color to translate data; however, it is a time-consuming process. 
+Selecting a colormap best suited to specific tasks, datasets, and data distributions is key to maximizing the capability of color to translate data; however, it is a time-consuming process.
 
 Creating custom colormaps requires time and color expertise. Even scientists who have taken our color tutorials report that while they understand the value of custom colormaps and have devoted time to customizing maps for their data, they report that it is a challenging process that often does not produce improvements on the default or other readily available options.
 
 
-\fix{Is the use of the word ``hue'' here consistent with how it is used elsewhere in the paper? Throughout the paper, we consider hue as one color property in a hue-saturation-luminance model. The linear maps described above (sometimes) change only saturation and luminance, leaving hue alone. Thus, when this paragraph states that colormaps translate data only through contrast of hues, that would mean that a linear map provides no data because it has no change of hue. Does the paragraph more generally mean perceptual differences in color rather than just differences in hue?}
-\\
+\km{Is the use of the word ``hue'' here consistent with how it is used elsewhere in the paper? Throughout the paper, we consider hue as one color property in a hue-saturation-luminance model. The linear maps described above (sometimes) change only saturation and luminance, leaving hue alone. Thus, when this paragraph states that colormaps translate data only through contrast of hues, that would mean that a linear map provides no data because it has no change of hue. Does the paragraph more generally mean perceptual differences in color rather than just differences in hue?}
 
-\fix{Yes, it is confusing. In my community hue refers  hue as you describe it but is also how we speak of individual colors, especially ones that are nuanced and without a specific name. I changed hue to colors and tried to clarify. If you have another suggestion, let me know.}
+\fs{Yes, it is confusing. In my community hue refers  hue as you describe it but is also how we speak of individual colors, especially ones that are nuanced and without a specific name. I changed hue to colors and tried to clarify. If you have another suggestion, let me know.}
 
 \begin{figure}
 \includegraphics[width=\linewidth]{pics/Ware17.png}
@@ -209,7 +210,7 @@ Creating custom colormaps requires time and color expertise. Even scientists who
 
 Ware tested the internal contrast levels of commonly used colormaps.
 The results, shown in Figure~\ref{Ware}, graph the amount of contrast across the colormaps.
-It illustrates the uneven contrast distribution of \huewheel, the more consistent higher level of contrast in both \blueorange, and \extendedcoolwarm and the shortcomings of other standards. 
+It illustrates the uneven contrast distribution of \huewheel, the more consistent higher level of contrast in both \blueorange, and \extendedcoolwarm and the shortcomings of other standards.
 
 \begin{figure*}[t]
 \centering
@@ -225,20 +226,20 @@ Colormaps with high discriminatory power employ multiple types of contrast acros
 Looking at Figure~\ref{Larsen3}, \huewheel relies on hue and simultaneous contrast, \coolwarm narrows the hue range but gains contrast by adding two cropped luminance ranges.
 Fast, like \huewheel includes a wide range of hue, a range of saturation levels, two robust luminance ranges, and complimentary contrast created by the inclusion of blue and orange hues.
 When constructing colormaps there are always trade-offs about which types and how much contrast should be included.
-The goal is to maximize the contrast between the internal hues, while maintaining harmony across the colormap. 
+The goal is to maximize the contrast between the internal hues, while maintaining harmony across the colormap.
 
 
- 
-%For this reason, default colormaps need to be constructed to address the needs of a wide range of data types and distributions. Given that color is our primary means of revealing the data, the default colormap is a critical component of any visualization program. 
 
-%The \huewheel colormap provided adequate discriminatory power when the range of data is small and detail is not required. However, as the data grows, the discriminatory power within colormaps needs to be increased to keep pace. 
+%For this reason, default colormaps need to be constructed to address the needs of a wide range of data types and distributions. Given that color is our primary means of revealing the data, the default colormap is a critical component of any visualization program.
+
+%The \huewheel colormap provided adequate discriminatory power when the range of data is small and detail is not required. However, as the data grows, the discriminatory power within colormaps needs to be increased to keep pace.
 
 The most common request we receive from scientists is higher feature resolution, a property driven by the internal contrast levels within the colormap.
 Larger numbers of control points enable one to build higher levels of internal contrast; however they disrupt the ease of adjusting the map to align with specific data.
 \fast has nine control point, balancing these conflicting interests.
 Future work includes addressing this trade-off by an automating the rescaling on the control point distribution.
 
-%It is worth noting that colormaps with larger numbers of control points are able to attain greater discriminatory power due to the greater control of hues sequences. However, here we have limited the number of control points as they make it difficult to adjust the hue distribution to meet the needs of your data while maintaining the even progression of contrast distribution. 
+%It is worth noting that colormaps with larger numbers of control points are able to attain greater discriminatory power due to the greater control of hues sequences. However, here we have limited the number of control points as they make it difficult to adjust the hue distribution to meet the needs of your data while maintaining the even progression of contrast distribution.
 
 \begin{figure}[t]
   \begin{subfigure}{\linewidth}
@@ -275,7 +276,7 @@ Future work includes addressing this trade-off by an automating the rescaling on
 The origins of the new default color map arise from a collaboration between climate scientists, visualization experts, and visual artists~\cite{Samsel2015}.
 The team found that the existing default colors do not reveal enough detail within the high-resolution data they use.
 This collaboration engendered the \blueorange colormap (Figure~\ref{fig:design:blueorange}), which better satisfies the needs of the climate scientists~\cite{Samsel2015:SC}.
-This colormap is built on the same principles as the \coolwarm colormap (Figure~\ref{fig:design:coolwarm}) but expanded the internal contrast incorporating longer paths through hue, saturation, and luminance, a principal well documented for increasing internal contrast \cite{Ware2023}.  
+This colormap is built on the same principles as the \coolwarm colormap (Figure~\ref{fig:design:coolwarm}) but expanded the internal contrast incorporating longer paths through hue, saturation, and luminance, a principal well documented for increasing internal contrast \cite{Ware2023}.
 
 
 \begin{figure}[t]
@@ -323,12 +324,12 @@ This tool simplifies many processes involved in building colormaps including adj
 A change in one section of the map often impacts another, driving the need for another iteration.
 %in which the  section of CCC-Tool and by comparing the HSV space control points which enable manipulation according to artistic color theory and LAB space, examining the plots for smoothness. Then the map is applied to four data sets: points, streamlines, volumetric data and a combination.
 
-%\textbf{Ken, I think this is redundant but take a look.}
-%\fix{Agreed. This does feel repetative.}
+%\fs{Ken, I think this is redundant but take a look.}
+%\km{Agreed. This does feel repetative.}
 %Figure~\ref{CCC1} shows the control points of \fast in the CCC-Tool\cite{Nardini2021} interface. We start by selecting and adjusting the control points in HSV space (left) as there the hues are intuitively adjustable. Once we are close to a the desired colormap, its control points are reviewed in CIElab (middle) which is useful for tuning the perceptual consistency of the map. In order to check the strength and distribution of the discriminatory power we review in the optimization metrics (bottom) section.
 
 
-%\fix{This paragraph also sounds repetative and it feels very awkwardly phrased. I think it will be more clear to just jump into the description of the \blueorange edits.}
+%\km{This paragraph also sounds repetative and it feels very awkwardly phrased. I think it will be more clear to just jump into the description of the \blueorange edits.}
 %Implementing the \textit{Criteria} exposes the inherent linkage and impacts. For example increasing smoothness decreases feature resolution but is important for minimizing artifacts. The iterative process involves balancing the smoothness, equal distribution of luminance, smooth hue transitions, as well as identify a path through turquoise and fuchsia, awkward transitions in digital colorspace. Like yellow, in their pure form they are lighter crisp. When darkened, they quickly become muddy, obscuring the hue.
 
 
@@ -348,7 +349,7 @@ A change in one section of the map often impacts another, driving the need for a
  % \caption{
     %%The colors at the ``dark'' ends of the \coolwarm colormap (left) are kept bright enough to easily discern shading.
     %The \blueorange colormap (middle) becomes too dark perceive shape.
-    
+
 
 % \begin{figure*}[t]
 %  \centering
@@ -359,7 +360,7 @@ A change in one section of the map often impacts another, driving the need for a
 %\end{figure*}
 
 
-%Figure~\ref{fig:CCC1} illustrates the process of modifying colormaps.  
+%Figure~\ref{fig:CCC1} illustrates the process of modifying colormaps.
 
 
 \blueorange, produces a strong white focal point in its center as demonstrated in Figure~\ref{fig:iterations}, on the left. %generated by the low saturation level.
@@ -379,7 +380,7 @@ The exchanges are further detailed in Figure~\ref{fig:Matrix}.
 %The right-hand section illustrates the increase of saturation in the mid-point to eliminate the white which is problematic when using a white background, common for publications.
 
 %Based on these needed adjustments to the \blueorange colormap, we constructed many candidate maps.
-%Figure~\ref{fig:iterations} renders these maps on data, documenting the changes and illustrating 
+%Figure~\ref{fig:iterations} renders these maps on data, documenting the changes and illustrating
 %the impact.
 
 These maps were evaluated using the $\Delta$E discriminability metric in CCC-Tool shown in the bottom panel of Figure~\ref{CCC1}. Figure \ref{fig:iterations} shows the application of these candidate colormaps on streamlines (top) and volumetric data (bottom).
@@ -396,12 +397,12 @@ The first goal was to lower the center focal point and equalize the uniformity o
 
 Next, we sought to further smooth the center range as well as experiment with lightening the end values to address the shading concerns.
 We also added a yellow tint to the center values to prevent bright colors from blending into white backgrounds.
-Both changes are shown in the middle of Figure~\ref{fig:iterations}. 
+Both changes are shown in the middle of Figure~\ref{fig:iterations}.
 
 
 However, the discriminatory power of this colormap was significantly compromised from these previous changes. We tried increasing the saturation across the colormap and extending the warm hues toward purple. Here the transition toward fushsia became problematic. To compensate, we increased the saturation again, removed the purple and shifted the turquoise region toward the center to provide the needed discrimination, resulting in the final \fast colormap shown on the right of Figure~\ref{fig:iterations}.
 
-These candidate colormaps manifest different balances of our criteria: the luminance range to balance discriminability and 3D shading; different luminance adjustments at the center point to balance uniformity and smoothness; and different hue ranges to balance discriminability and order. 
+These candidate colormaps manifest different balances of our criteria: the luminance range to balance discriminability and 3D shading; different luminance adjustments at the center point to balance uniformity and smoothness; and different hue ranges to balance discriminability and order.
 
 
 %%\centering
@@ -432,7 +433,7 @@ This cannot be done easily with larger numbers of control points, so we removed 
 Our final design has nine control points as it is the minimum needed to produce a smoothly transitioning map that moves through the hues we have selected.
 
 
- 
+
 \section{USER FEEDBACK}
 
 As we neared completion of the new colormap design, the development team wanted feedback from current users about these changes before being affected by them.
@@ -459,7 +460,7 @@ The \coolwarm colormap was designed about 15 years ago to move away from the \hu
 In the interim, multiple colormaps based on the hues of the rainbow that correct some of the problems of the \huewheel have been designed.
 More recent research suggests that added hues and more nameable colors can assist in color differentiations that are not otherwise explained by our perceptual color models \cite{Reda2021}.
 This leads some to suggest that perceptually correct colormaps based on rainbow colormaps might be favorable \cite{Ware2023}.
-Although the \fast colormap does not incorporate all rainbow hues, it does improve dramatically over the hues provided by \coolwarm. 
+Although the \fast colormap does not incorporate all rainbow hues, it does improve dramatically over the hues provided by \coolwarm.
 
 \fast also has more namable colors than its \coolwarm predecessor.
 Using the color categorization tendency metric proposed by Reda \cite{Reda2022}, \fast once again exceeds \coolwarm.
