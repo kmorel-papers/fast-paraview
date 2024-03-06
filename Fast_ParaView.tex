@@ -117,136 +117,6 @@ Consequently, the ParaView development team has been motivated to revisit its de
 This paper describes the processes we undertook to design a new default colormap for ParaView, which we dub ``\fast'', shown on the right side of Figure~\ref{Larsen3}.
 We describe the criteria we used in designing this colormap: the iterative design process; refining the hue selection; smoothing the transitions; distributing the final colormap to get feedback from current users; evaluation using perceptual models; and making the final refinements.
 
-
-\section{CRITERIA}
-
-There are many guidelines for colormaps proposed in the literature. We use the collection compiled by Bujack et al.~\cite{Bujack2018} as a guide. The characteristics most important to us, in no particular order, are as follows.
-
-\begin{itemize}
-
-\item \emph{Discriminative power} --
-  We wish to maximize the number of just noticeable differences in the colormap to make subtle differences visible.
-\item \emph{Uniformity} --
-  The perceptual difference between colors should be commensurate with the difference in the numbers they represent.
-\item \emph{Smoothness} --
-  The rate of change of coloring should be uniform along with the difference in colors themselves.
-  This is particularly important for the luminance profile where a sharp change from increasing to decreasing brightness can cause undesired bands.
-\item \emph{Order} --
-  The color sequence should have an easy to intuit, or at least easy to remember, progression from low to high values.
-  The colors should follow natural interpretations and accepted conventions where possible.
-\item \emph{Robustness to shading on 3D surfaces} -- Shading, which darkens a surface based on its orientation with respect to the light source and viewer, is vital in perceiving shape.
-  If a surface is painted with overly dark colors, the shading becomes indiscernible.
-  %as can be seen in Figure~\ref{fig:3d-shading}.
-\item \emph{Robustness to colorblindness} --
-  The colors should be distinguishable for the many users with various types and degrees of colorblindness.
-\item \emph{Aesthetically pleasing} --
-  Although quite subjective, ParaView users should generally be pleased with the new colors.
-
-\end{itemize}
-
-The color theory section below details relevant artistic color theory illuminates why these characteristics are not independent, and improvements in one property could degrade the effectiveness in others.
-
-%For example, issues with order, 3D surfaces, or colorblindess are typically resolved by limiting the colors used, but reducing the number of colors lowers the discriminative power of the map. Consequently, there is no such thing as the perfect color map. Our default colormap needs to be a jack of all trades even if it is a master at none.
-
-
-
-\section {COLORMAPS \& ARTISTIC COLOR THEORY}
-
-Colormaps come in a wide variety, categorized loosely by their luminance distribution and number of ramps.
-%and designed to address different visualization tasks, data distributions as well as the needs and conventions of the science domain.
-General categories include discrete, linear, diverging, isoluminent, and more custom constructions such as wave maps.
-Discrete colormaps contain specific hues without interpolation between hues.
-Linear maps, colormaps that span one value ramp, enable intuitive identification of scalar values and equalized attention across the visualization but contain lower discriminatory power due to the monotonic luminance profile ramp and a narrow range of hues.
-Diverging maps are colormaps that contain two abutting value ramps, which provides addition discriminatory power.
-\coolwarm, \blueorange, and \fast are all examples of diverging maps.
-Isolumient colormaps hold advantages for specific uses but suffer from low discriminatory power as by definition they seek to limit the luminance range as shown in Figure~\ref{Ware}.
-
-As a base for our discussion, it will be helpful to understand a bit about Artistic Color Contrast Theory \cite{Itten, Albers}. Artistic Color Contrast Theory, the foundation of painting since the Renaissance, is a set of principles that drive the characteristics and interactions and of colors. The principles center on the seven types of color contrast~\cite{Itten}.
-The first three are
-\begin{inparaenum}[(1)]
-\item contrast of hue,
-\item contrast of saturation, and
-\item contrast of luminance, which are familiar as they align with parameters of HSL and other color spaces.
-Two more are
-\item cool-warm contrast and
-\item complimentary contrast, both of which involve colors on opposite sides of the color wheel.
-The remaining two are
-\item simultaneous contrast at play in the \huewheel colormap and
-\item contrast of extension, which speaks to balance of the area covered by specific hues.
-\end{inparaenum}
-
-Colormaps translate data, not through the colors themselves, but through the \textit{contrast} between perceivable colors within the colormap. In discrete colormaps it is the contrast between the individual colors that reveals the data. Scalar colormaps are smooth ramps generated by selecting a set of control points and then interpolating between the control points in CIELAB colorspace. The discriminatory power in a colormap relies on the contrast across its entire path through colorspace, which includes both the control points and the colors on the path through color space.
-
-Figure~\ref{contrast} illustrates three types of color contrast as applied to data from a simulation of bow waves in Ganymede's magnetosphere. The data range is clipped to concentrate the contrast in the bow waves, which is the area of interest. The figure contains three divergent colormaps which illustrate specific types of contrast - hue, saturation and luminance. The hue contrast is between red and blue; saturated, warm hues against a muted tan hue; luminance, black and white. On right, multiple types on contrasts are combined: hue, the range of cool colors in the blue green ramp; saturation, the saturated cool hues with the muted tan hue; luminance, the dark greens and blues against the light tan; and a subtle cool warm contrast between the cool blue to green range and the warm yellow tan in the upper range. The luminance alone provides clear differentiation of the large features but does not capture the nuance shown in the saturation contrast example.
-
-\km{I am thoroughly confused by this description. The description in the text does not match the description in the caption. Is this meant to say that the first image shows hue contrast, the second saturation contrast, etc.? If so, how is the left image not also showing, say, cool-warm contrast? Why is the third image (luminance contrast?) two solid colors but the others gradients?}
-
-\fs{The point of this figure is to show the primary types of contrast - hue, sat and ,value, applied to data. People understand the verbal description of contrast types but it I find that in order to get buy in you need to illustrate the concepts on data.
-I am always surprised when I get asked things like what is a muted color.what are the cool colors, etc. This figure was to lay the foundation for understanding what those mean. Yes, they all have multiple types of contrast but that cant be avoided.}
-
-\km{If the last image is a combination of contrasts, why not show \fast? }
-
-\fs{Fast is a compromise and thus does not present as clear an example of the impact of multiple types of contrast.}
-
-\km{And what are the images supposed to demonstrate? Are some showing detail not seen in the others?}
-
-\fs{to some degree yes but the point is to help them make the translation between adjusting the characteristics of a colormap and how that impacts what you see.}
-
-\km{That is really my confusion. I get that the pictures are supposed to show me how the characteristics impact what I see, but apart from different colors I see pretty much the same thing in each picture. Maybe if it was explicitly said what is different about each one that would help.}
-
-\fs{None of these issues are hills I want to die on. Happy to make changes. It would be easier to discuss as we approach the topic differently.}
-
-\km{Generally, I liked reading your discussion of the different types of contrast. This was new to me and I'm very curious about I would apply this. The problem for me (and I think I am part of the target audiance) is that the picture never brought it together. I look at it, say, yup the colors are different, but otherwise I don't immediately see how one might be ``better'' than another. At the very least, we should be able to point to the right image and identify something better than each other image independently, but I don't clearly see that.}
-
-
-Selecting a colormap best suited to specific tasks, datasets, and data distributions is key to maximizing the capability of color to translate data; however, it is a time-consuming process.
-
-Creating custom colormaps requires time and color expertise. Even scientists who have taken our color tutorials report that while they understand the value of custom colormaps and have devoted time to customizing maps for their data, they report that it is a challenging process that often does not produce improvements on the default or other readily available options.
-
-
-%\km{Is the use of the word ``hue'' here consistent with how it is used elsewhere in the paper? Throughout the paper, we consider hue as one color property in a hue-saturation-luminance model. The linear maps described above (sometimes) change only saturation and luminance, leaving hue alone. Thus, when this paragraph states that colormaps translate data only through contrast of hues, that would mean that a linear map provides no data because it has no change of hue. Does the paragraph more generally mean perceptual differences in color rather than just differences in hue?}
-
-%\fs{Yes, it is confusing. In my community hue refers  hue as you describe it but is also how we speak of individual colors, especially ones that are nuanced and without a specific name. I changed hue to colors and tried to clarify. If you have another suggestion, let me know.}
-
-\begin{figure}
-\includegraphics[width=\linewidth]{pics/Ware17.png}
-\caption{This chart by Ware et al. \cite{Ware2017} illustrates the discriminatory at points across the colormap. The abbreviations, left to right: RA - \huewheel; CW - \coolwarm; ECW - \extendedcoolwarm; BOD = \blueorange; VI - \colormap{Viridis}; GP - \colormap{Grayscale}; GR - \colormap{Green-Red}. }
-\label{Ware}
-\end{figure}
-
-Ware tested the internal contrast levels of commonly used colormaps.
-The results, shown in Figure~\ref{Ware}, graph the amount of contrast across the colormaps.
-It illustrates the uneven contrast distribution of \huewheel, the more consistent higher level of contrast in both \blueorange and \extendedcoolwarm (an alternative to \blueorange using extended hues from \coolwarm), and the shortcomings of other standards.
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{Final_Pics/HSV.png}
-\caption{
-  These visualizations are slices through magnetosphere around Ganymede, illustrating three primary types of contrast applied to data.
-  Left to right:  hue contrast; saturation contrast; value or luminance contrast; and a combination of hue, saturation, luminance, analogous contrast and cool - warm contrast.
-}
-\label{contrast}
-\end{figure*}
-
-Colormaps with high discriminatory power employ multiple types of contrast across the map.
-Looking at Figure~\ref{Larsen3}, \huewheel relies on hue and simultaneous contrast, \coolwarm narrows the hue range but gains contrast by adding two cropped luminance ranges.
-Fast, like \huewheel includes a wide range of hue, a range of saturation levels, two robust luminance ranges, and complimentary contrast created by the inclusion of blue and orange hues.
-When constructing colormaps there are always trade-offs about which types and how much contrast should be included.
-The goal is to maximize the contrast between the internal hues, while maintaining harmony across the colormap.
-
-
-
-%For this reason, default colormaps need to be constructed to address the needs of a wide range of data types and distributions. Given that color is our primary means of revealing the data, the default colormap is a critical component of any visualization program.
-
-%The \huewheel colormap provided adequate discriminatory power when the range of data is small and detail is not required. However, as the data grows, the discriminatory power within colormaps needs to be increased to keep pace.
-
-The most common request we receive from scientists is higher feature resolution, a property driven by the internal contrast levels within the colormap.
-Larger numbers of control points enable one to build higher levels of internal contrast; however they disrupt the ease of adjusting the map to align with specific data.
-\fast has nine control point, balancing these conflicting interests.
-Future work includes addressing this trade-off by an automating the rescaling on the control point distribution.
-
-%It is worth noting that colormaps with larger numbers of control points are able to attain greater discriminatory power due to the greater control of hues sequences. However, here we have limited the number of control points as they make it difficult to adjust the hue distribution to meet the needs of your data while maintaining the even progression of contrast distribution.
-
 \begin{figure}[t]
   \begin{subfigure}{\linewidth}
     \includegraphics[width=\linewidth]{map-cool-to-warm}
@@ -277,6 +147,137 @@ Future work includes addressing this trade-off by an automating the rescaling on
   }
   \label{fig:designs}
 \end{figure}
+
+\section{CRITERIA}
+
+There are many guidelines for colormaps proposed in the literature. We use the collection compiled by Bujack et al.~\cite{Bujack2018} as a guide. The characteristics most important to us, in no particular order, are as follows.
+
+\begin{itemize}
+
+\item \emph{Discriminative power} --
+  We wish to maximize the number of just noticeable differences in the colormap to make subtle differences visible.
+\item \emph{Uniformity} --
+  The perceptual difference between colors should be commensurate with the difference in the numbers they represent.
+\item \emph{Smoothness} --
+  The rate of change of coloring should be uniform along with the difference in colors themselves.
+  This is particularly important for the luminance profile where a sharp change from increasing to decreasing brightness can cause undesired bands.
+\item \emph{Order} --
+  The color sequence should have an easy to intuit, or at least easy to remember, progression from low to high values.
+  The colors should follow natural interpretations and accepted conventions where possible.
+\item \emph{Robustness to shading on 3D surfaces} -- Shading, which darkens a surface based on its orientation with respect to the light source and viewer, is vital in perceiving shape.
+  If a surface is painted with overly dark colors, the shading becomes indiscernible.
+  %as can be seen in Figure~\ref{fig:3d-shading}.
+\item \emph{Robustness to colorblindness} --
+  The colors should be distinguishable for the many users with various types and degrees of colorblindness.
+\item \emph{Aesthetically pleasing} --
+  Although quite subjective, ParaView users should generally be pleased with the new colors.
+
+\end{itemize}
+These critera are not independent improvements as changes in one property could degrade the effectiveness in others.
+The color theory section below details relevant artistic color theory principles which drove the construction of \fast, shown in Figure~\ref{fig:designs}. 
+
+%For example, issues with order, 3D surfaces, or colorblindess are typically resolved by limiting the colors used, but reducing the number of colors lowers the discriminative power of the map. Consequently, there is no such thing as the perfect color map. Our default colormap needs to be a jack of all trades even if it is a master at none.
+
+\begin{figure}
+\includegraphics[width=\linewidth]{pics/Ware17.png}
+\caption{This chart by Ware et al. \cite{Ware2017} illustrates the discriminatory at points across the colormap. The abbreviations, left to right: RA - \huewheel; CW - \coolwarm; ECW - \extendedcoolwarm; BOD = \blueorange; VI - \colormap{Viridis}; GP - \colormap{Grayscale}; GR - \colormap{Green-Red}. }
+\label{Ware}
+\end{figure}
+
+
+\section {COLORMAPS \& ARTISTIC COLOR THEORY}
+
+Colormaps come in a wide variety, categorized loosely by their luminance distribution and number of ramps.
+%and designed to address different visualization tasks, data distributions as well as the needs and conventions of the science domain.
+General categories include discrete, linear, diverging, isoluminent, and more custom constructions such as wave maps.
+Discrete colormaps contain specific hues without interpolation between hues.
+Linear maps, colormaps that span one value ramp, enable intuitive identification of scalar values and equalized attention across the visualization but contain lower discriminatory power due to the monotonic luminance profile ramp and a narrow range of hues.
+Diverging maps are colormaps that contain two abutting value ramps, which provides addition discriminatory power.
+\coolwarm, \blueorange, and \fast are all examples of diverging maps.
+Isolumient colormaps hold advantages for specific uses but suffer from low discriminatory power as by definition they seek to limit the luminance range as shown in Figure~\ref{Ware}.
+
+As a base for our discussion, it will be helpful to understand a bit about Artistic Color Contrast Theory \cite{Itten, Albers}. Artistic Color Contrast Theory, the foundation of painting since the Renaissance, is a set of principles that drive the characteristics and interactions and of colors. The principles center on the seven types of color contrast~\cite{Itten}.
+The first three are
+\begin{inparaenum}[(1)]
+\item contrast of hue,
+\item contrast of saturation, and
+\item contrast of luminance, which are familiar as they align with parameters of HSL and other color spaces.
+Two more are
+\item cool-warm contrast and
+\item complimentary contrast, both of which involve colors on opposite sides of the color wheel.
+The remaining two are
+\item simultaneous contrast at play in the \huewheel colormap and
+\item contrast of extension, which speaks to balance of the area covered by specific hues.
+\end{inparaenum}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{Final_Pics/HSVV.png}
+\caption{This set of visualizations illustrates the impacts on \coolwarm when the value, saturation and hue are extended to their full range. Left: \coolwarm, \coolwarm with the luminance extended to black; \coolwarm with the saturation spanning into full saturation at the ends of the coolormap; hue, spanning through cool and warm colors with the same luminance and saturation values as \coolwarm; and \fast which balances luminance, saturation and hue ranges in order to best meet the colormap criteria.}
+
+\label{contrast}
+\end{figure*}
+
+Colormaps translate data, not through the colors themselves, but through the \textit{contrast} between perceivable colors within the colormap. In discrete colormaps it is the contrast between the individual colors that reveals the data. Scalar colormaps are smooth ramps generated by selecting a set of control points and then interpolating between the control points in CIELAB colorspace. The discriminatory power in a colormap relies on the contrast across its entire path through colorspace, which includes both the control points and the colors on the path through color space.
+
+Figure~\ref{contrast} illustrates three types of color contrast as applied to data from a simulation of bow waves in Ganymede's magnetosphere. The data range is clipped to concentrate the contrast in the bow waves, which is the area of interest. The figure contains three divergent colormaps which illustrate specific types of contrast - hue, saturation and luminance. The hue contrast is between red and blue; saturated, warm hues against a muted tan hue; luminance, black and white. On right, multiple types on contrasts are combined: hue, the range of cool colors in the blue green ramp; saturation, the saturated cool hues with the muted tan hue; luminance, the dark greens and blues against the light tan; and a subtle cool warm contrast between the cool blue to green range and the warm yellow tan in the upper range. The luminance alone provides clear differentiation of the large features but does not capture the nuance shown in the saturation contrast example.
+
+%\km{I am thoroughly confused by this description. The description in the text does not match the description in the caption. Is this meant to say that the first image shows hue contrast, the second saturation contrast, etc.? If so, how is the left image not also showing, say, cool-warm contrast? Why is the third image (luminance contrast?) two solid colors but the others gradients?}
+
+%\fs{The point of this figure is to show the primary types of contrast - hue, sat and ,value, applied to data. People understand the verbal description of contrast types but it I find that in order to get buy in you need to illustrate the concepts on data.
+%I am always surprised when I get asked things like what is a muted color.what are the cool colors, etc. This figure was to lay the foundation for understanding what those mean. Yes, they all have multiple types of contrast but that cant be avoided.}
+
+%\km{If the last image is a combination of contrasts, why not show \fast? }
+
+%\fs{Fast is a compromise and thus does not present as clear an example of the impact of multiple types of contrast.}
+
+%\km{And what are the images supposed to demonstrate? Are some showing detail not seen in the others?}
+
+%\fs{to some degree yes but the point is to help them make the translation between adjusting the characteristics of a colormap and how that impacts what you see.}
+
+%\km{That is really my confusion. I get that the pictures are supposed to show me how the characteristics impact what I see, but apart from different colors I see pretty much the same thing in each picture. Maybe if it was explicitly said what is different about each one that would help.}
+
+%\fs{None of these issues are hills I want to die on. Happy to make changes. It would be easier to discuss as we approach the topic differently.}
+
+%\km{Generally, I liked reading your discussion of the different types of contrast. This was new to me and I'm very curious about I would apply this. The problem for me (and I think I am part of the target audiance) is that the picture never brought it together. I look at it, say, yup the colors are different, but otherwise I don't immediately see how one might be ``better'' than another. At the very least, we should be able to point to the right image and identify something better than each other image independently, but I don't clearly see that.}
+
+
+Selecting a colormap best suited to specific tasks, datasets, and data distributions is key to maximizing the capability of color to translate data; however, it is a time-consuming process.
+
+Creating custom colormaps requires time and color expertise. Even scientists who have taken our color tutorials report that while they understand the value of custom colormaps and have devoted time to customizing maps for their data, they report that it is a challenging process that often does not produce improvements on the default or other readily available options.
+
+
+%\km{Is the use of the word ``hue'' here consistent with how it is used elsewhere in the paper? Throughout the paper, we consider hue as one color property in a hue-saturation-luminance model. The linear maps described above (sometimes) change only saturation and luminance, leaving hue alone. Thus, when this paragraph states that colormaps translate data only through contrast of hues, that would mean that a linear map provides no data because it has no change of hue. Does the paragraph more generally mean perceptual differences in color rather than just differences in hue?}
+
+%\fs{Yes, it is confusing. In my community hue refers  hue as you describe it but is also how we speak of individual colors, especially ones that are nuanced and without a specific name. I changed hue to colors and tried to clarify. If you have another suggestion, let me know.}
+
+
+
+Ware tested the internal contrast levels of commonly used colormaps.
+The results, shown in Figure~\ref{Ware}, graph the amount of contrast across the colormaps.
+It illustrates the uneven contrast distribution of \huewheel, the more consistent higher level of contrast in both \blueorange and \extendedcoolwarm (an alternative to \blueorange using extended hues from \coolwarm), and the shortcomings of other standards.
+
+
+
+Colormaps with high discriminatory power employ multiple types of contrast across the map.
+Looking at Figure~\ref{Larsen3}, \huewheel relies on hue and simultaneous contrast, \coolwarm narrows the hue range but gains contrast by adding two cropped luminance ranges.
+Fast, like \huewheel includes a wide range of hue, a range of saturation levels, two robust luminance ranges, and complimentary contrast created by the inclusion of blue and orange hues.
+When constructing colormaps there are always trade-offs about which types and how much contrast should be included.
+The goal is to maximize the contrast between the internal hues, while maintaining harmony across the colormap.
+
+
+
+%For this reason, default colormaps need to be constructed to address the needs of a wide range of data types and distributions. Given that color is our primary means of revealing the data, the default colormap is a critical component of any visualization program.
+
+%The \huewheel colormap provided adequate discriminatory power when the range of data is small and detail is not required. However, as the data grows, the discriminatory power within colormaps needs to be increased to keep pace.
+
+The most common request we receive from scientists is higher feature resolution, a property driven by the internal contrast levels within the colormap.
+Larger numbers of control points enable one to build higher levels of internal contrast; however they disrupt the ease of adjusting the map to align with specific data.
+\fast has nine control point, balancing these conflicting interests.
+Future work includes addressing this trade-off by an automating the rescaling on the control point distribution.
+
+%It is worth noting that colormaps with larger numbers of control points are able to attain greater discriminatory power due to the greater control of hues sequences. However, here we have limited the number of control points as they make it difficult to adjust the hue distribution to meet the needs of your data while maintaining the even progression of contrast distribution.
+
 
 \section{CONSTRUCTING A NEW DEFAULT}
 The origins of the new default color map arise from a collaboration between climate scientists, visualization experts, and visual artists~\cite{Samsel2015}.
