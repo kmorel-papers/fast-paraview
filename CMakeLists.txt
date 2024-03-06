@@ -6,11 +6,11 @@ include(UseLATEX.cmake)
 
 add_latex_document(Fast_ParaView.tex
   BIBFILES Fast_ParaView.bib
-  IMAGE_DIRS pics Final_Pics
+  IMAGE_DIRS pics
   )
 
 add_latex_document(Fast_ParaView_diff.tex
   BIBFILES Fast_ParaView.bib
-  IMAGE_DIRS pics Final_Pics
+  IMAGE_DIRS pics
   EXCLUDE_FROM_ALL
   )

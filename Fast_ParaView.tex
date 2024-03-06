@@ -92,7 +92,7 @@ Here we present the new default colormap design for Paraview, a scientific visua
 
 \begin{figure*}[htb]
 \centering
-\includegraphics[width=\textwidth]{Final_Pics/Larsen_the3.png}
+\includegraphics[width=\textwidth]{Larsen_the3}
 \caption{Paraview's first default colormap was the \huewheel, left, which was improved upon with the adoption of \coolwarm, center. The new default, \fast, is on the right. All are shown on combustion data, \cite{Larsen}, illustrating the improving feature resolution power progression}.
 \label{Larsen3}
 \end{figure*}
@@ -121,7 +121,7 @@ We describe the criteria we used in designing this colormap: the iterative desig
 
 \begin{figure*}[b]
 \centering
-\includegraphics[width=\textwidth]{Final_Pics/HSVV.png}
+\includegraphics[width=\textwidth]{HSVV}
 \caption{This set of visualizations illustrates the impacts on \coolwarm when the value, saturation and hue are extended to their full range. Left: \coolwarm, \coolwarm with the luminance extended to black; \coolwarm with the saturation spanning into full saturation at the ends of the coolormap; hue, spanning through cool and warm colors with the same luminance and saturation values as \coolwarm; and \fast which balances luminance, saturation and hue ranges in order to best meet the colormap criteria.}
 
 \label{fig:contrast}
@@ -229,7 +229,7 @@ Creating custom colormaps requires time and color expertise. Even scientists who
 
 
 \begin{figure}[ht]
-\includegraphics[width=\linewidth]{pics/Ware17.png}
+\includegraphics[width=\linewidth]{Ware17}
 \caption{This chart by Ware et al. \cite{Ware2017} illustrates the discriminatory at points across the colormap. The abbreviations, left to right: RA - \huewheel; CW - \coolwarm; ECW - \extendedcoolwarm; BOD = \blueorange; VI - \colormap{Viridis}; G2 - \colormap{Perceptual Grayscale}; GL - \colormap{Linear Grayscale}. }
 \label{fig:ware}
 \end{figure}
@@ -272,7 +272,7 @@ Future work includes addressing this trade-off by an automating the rescaling on
     \label{fig:design:coolwarm}
   \end{subfigure}\\[4pt]
   \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{Final_Pics/CW_extended.png}
+    \includegraphics[width=\linewidth]{CW_extended}
     \vspace{-1.4\baselineskip}
     \caption{\extendedcoolwarm colormap.}
     \label{fig:design:cw est}
@@ -303,7 +303,7 @@ This colormap is built on the same principles as the \coolwarm colormap (Figure~
 
 
 \begin{figure}[t]
-\includegraphics[width=\columnwidth]{Final_Pics/30F_combo.png}
+\includegraphics[width=\columnwidth]{30F_combo}
 \centering
 \caption{CCC-Tool's colormap construction interface showing the control points of \fast. Top to bottom: HSL control points; LAB control points and the optimization function we used to determine the level of local discriminatory power.}
 \label{CCC1}
@@ -311,7 +311,7 @@ This colormap is built on the same principles as the \coolwarm colormap (Figure~
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{Final_Pics/Compare22.png}
+  \includegraphics[width=\textwidth]{Compare22}
   \caption{
     Iterative design from the \blueorange colormap (left) to our final design of \fast (right).
     The impact of each iteration is demonstrated on two types of data: streamlines of wind from a fire simulation, and volumetric data of smoke from the same fire simulation.}
@@ -358,7 +358,7 @@ A change in one section of the map often impacts another, driving the need for a
 
 %\begin{figure}[htb]
 %\centering
-%\includegraphics[width=\columnwidth]{pics/Ocean2.png}
+%\includegraphics[width=\columnwidth]{Ocean2}
 %\caption{Demonstration of the smoothness of colormaps using E3SM ocean temperature data.
     %The \blueorange colormap (middle) has a sharp ``peak'' at the center white point where the luminance transitions from increasing to decreasing.
     %Our final \fast colormap (right) smooths out this middle point.
@@ -412,7 +412,7 @@ The first goal was to lower the center focal point and equalize the uniformity o
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{Final_Pics/TheMatrix.png}
+\includegraphics[width=\textwidth]{TheMatrix}
 \caption{Left to right are five datasets: ocean kinetic energy; wildfire wind; magnetic reconnection; combustion simulation; wildfire smoke. They are organized by the data characteristics: the two left columns contain data spanning the full range, relatively evenly; the middle column is noisy data that spans the full range but is concentrated in the mid-range; the right two columns contain data concentrated on the low end, 2D and 3D, in column four and five respectively. }
 \label{fig:Matrix}
 \end{figure*}
@@ -562,12 +562,6 @@ This colormap is provided as one of the available colormaps in ParaView~5.12 and
 
 Revisiting the criteria presented at the beginning of this paper, evaluations and user feedback show the advantages of \fast over \coolwarm and other standard defaults. Figure~\ref{fig:Matrix} provides comparisons of the criteria across five data sets.
 
-
-%\begin{figure}
-%\includegraphics[width=\linewidth]{pics/Larsen2.png}
-%\caption{Combustion simulation (Larsen, LLNL) of \coolwarm (left) and \fast (right) colormaps demonstrating to discriminatory power in the mid-range of data values.}
-%\label{Larsen}
-%\end{figure}
 
 
 \begin{itemize}
