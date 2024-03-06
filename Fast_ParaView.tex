@@ -178,12 +178,6 @@ The color theory section below details relevant artistic color theory principles
 
 %For example, issues with order, 3D surfaces, or colorblindess are typically resolved by limiting the colors used, but reducing the number of colors lowers the discriminative power of the map. Consequently, there is no such thing as the perfect color map. Our default colormap needs to be a jack of all trades even if it is a master at none.
 
-\begin{figure}
-\includegraphics[width=\linewidth]{pics/Ware17.png}
-\caption{This chart by Ware et al. \cite{Ware2017} illustrates the discriminatory at points across the colormap. The abbreviations, left to right: RA - \huewheel; CW - \coolwarm; ECW - \extendedcoolwarm; BOD = \blueorange; VI - \colormap{Viridis}; GP - \colormap{Grayscale}; GR - \colormap{Green-Red}. }
-\label{Ware}
-\end{figure}
-
 
 \section {COLORMAPS \& ARTISTIC COLOR THEORY}
 
@@ -194,7 +188,8 @@ Discrete colormaps contain specific hues without interpolation between hues.
 Linear maps, colormaps that span one value ramp, enable intuitive identification of scalar values and equalized attention across the visualization but contain lower discriminatory power due to the monotonic luminance profile ramp and a narrow range of hues.
 Diverging maps are colormaps that contain two abutting value ramps, which provides addition discriminatory power.
 \coolwarm, \blueorange, and \fast are all examples of diverging maps.
-Isolumient colormaps hold advantages for specific uses but suffer from low discriminatory power as by definition they seek to limit the luminance range as shown in Figure~\ref{Ware}.
+Isolumient colormaps hold advantages for specific uses but suffer from low discriminatory power as by definition they seek to limit the luminance.
+%range as shown in Figure~\ref{fig:ware}. \km{The figure shows no isolumant maps}.
 
 As a base for our discussion, it will be helpful to understand a bit about Artistic Color Contrast Theory \cite{Itten, Albers}. Artistic Color Contrast Theory, the foundation of painting since the Renaissance, is a set of principles that drive the characteristics and interactions and of colors. The principles center on the seven types of color contrast~\cite{Itten}.
 The first three are
@@ -261,9 +256,15 @@ Creating custom colormaps requires time and color expertise. Even scientists who
 %\fs{Yes, it is confusing. In my community hue refers  hue as you describe it but is also how we speak of individual colors, especially ones that are nuanced and without a specific name. I changed hue to colors and tried to clarify. If you have another suggestion, let me know.}
 
 
+\begin{figure}
+\includegraphics[width=\linewidth]{pics/Ware17.png}
+\caption{This chart by Ware et al. \cite{Ware2017} illustrates the discriminatory at points across the colormap. The abbreviations, left to right: RA - \huewheel; CW - \coolwarm; ECW - \extendedcoolwarm; BOD = \blueorange; VI - \colormap{Viridis}; G2 - \colormap{Perceptual Grayscale}; GL - \colormap{Linear Grayscale}. }
+\label{fig:ware}
+\end{figure}
 
-Ware tested the internal contrast levels of commonly used colormaps.
-The results, shown in Figure~\ref{Ware}, graph the amount of contrast across the colormaps.
+
+Ware et al. \cite{Ware2017} tested the internal contrast levels of commonly used colormaps.
+The results, shown in Figure~\ref{fig:ware}, graph the amount of contrast across the colormaps.
 It illustrates the uneven contrast distribution of \huewheel, the more consistent higher level of contrast in both \blueorange and \extendedcoolwarm (an alternative to \blueorange using extended hues from \coolwarm), and the shortcomings of other standards.
 
 
@@ -322,7 +323,7 @@ The hue range is also expanded by
 \item moving the darker colors toward purple and maroon.
 \end{inparaenum}
 The saturation is also significantly increased across the color map to bring more vibrancy and to more clearly distinguish between the hues.
-User studies like that in Figure~\ref{Ware}
+User studies like that in Figure~\ref{fig:ware}
 show the \blueorange colormap to be better than the original \coolwarm colormap and overall one of the best performing colormaps \cite{Ware2017,Ware2019,Turton2017}.
 
 
@@ -433,7 +434,7 @@ Colormaps for 3D surfaces have an added complexity.
 %In the mid-value range of the colormap they shift the value but do not disrupt our ability to see the forms.
 %In the low and high ends of the colormap, where the hues are the dark, shadows can prevent us from seeing the shape altogether.
 %Given that luminance is the most powerful contrast type, the sacrifice is significant.
-%Figure~\ref{Ware} details the impact on the discriminatory power.
+%Figure~\ref{fig:ware} details the impact on the discriminatory power.
 The right column in Figure~\ref{fig:Matrix} illustrates the interference of shading and colors in \coolwarm, \blueorange, \fast, and other colormaps.
 \coolwarm, second row, addresses this issue by not including darker blues and reds, but it does so at a cost of lowering the discriminatory power.
 %In the \coolwarm the 3D forms are clearer than but in visualizations showing the full range of the data, detail is lost.
