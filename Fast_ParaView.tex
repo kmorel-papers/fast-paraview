@@ -32,6 +32,7 @@
 \newcommand*{\fs}[1]{\textcolor{fs}{\emph{\textbf{#1} -- FS}}}
 
 \usepackage{booktabs}
+\usepackage{dblfloatfix}
 \usepackage{paralist}
 \usepackage{subcaption}
 \usepackage{xspace}
@@ -85,6 +86,8 @@ The efficacy of a pseudocolor visualization depends on a person's ability to per
 Ideally, each visualization would have a colormap tailored to the specifics of its data, tasks, and audience, but this is usually impractical.
 A typical user is unlikely to be a color expert, so it is imperative that the visualization system provide sound options that accurately and impartially represent the data. It is particularly important to have a good default colormap that is used in the absence of any further configuration. Many users will have neither the inclination nor the proficiency to change the default colors selected by the visualization system.
 
+Here we present the new default colormap design for Paraview, a scientific visualization software application used throughout the scientific community to visualize large, complex datasets in both 2D and 3D space. The authors of this paper are longtime contributors to the ParaView scientific visualization application~\cite{Ahrens2005}.
+
 
 \begin{figure*}[htb]
 \centering
@@ -92,8 +95,6 @@ A typical user is unlikely to be a color expert, so it is imperative that the vi
 \caption{Paraview's first default colormap was the \huewheel, left, which was improved upon with the adoption of \coolwarm, center. The new default, \fast, is on the right. All are shown on combustion data, \cite{Larsen}, illustrating the improving feature resolution power progression}.
 \label{Larsen3}
 \end{figure*}
-
-Here we present the new default colormap design for Paraview, a scientific visualization software application used throughout the scientific community to visualize large, complex datasets in both 2D and 3D space. The authors of this paper are longtime contributors to the ParaView scientific visualization application~\cite{Ahrens2005}.
 
 Default colormaps must balance the needs of many users. This raises distinct challenges for colormap construction in ParaView and similar scientific visualizaton software.
 Care has been taken to choose colors and colormaps in ParaView that work well in a variety of contexts.
@@ -117,36 +118,13 @@ Consequently, the ParaView development team has been motivated to revisit its de
 This paper describes the processes we undertook to design a new default colormap for ParaView, which we dub ``\fast'', shown on the right side of Figure~\ref{Larsen3}.
 We describe the criteria we used in designing this colormap: the iterative design process; refining the hue selection; smoothing the transitions; distributing the final colormap to get feedback from current users; evaluation using perceptual models; and making the final refinements.
 
-\begin{figure}[t]
-  \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{map-cool-to-warm}
-    \vspace{-1.4\baselineskip}
-    \caption{Original \coolwarm coolwarm.}
-    \label{fig:design:coolwarm}
-  \end{subfigure}\\[4pt]
-  \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{Final_Pics/CW_extended.png}
-    \vspace{-1.4\baselineskip}
-    \caption{\extendedcoolwarm colormap.}
-    \label{fig:design:cw est}
-  \end{subfigure}\\[4pt]
-  \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{map-blue-orange-diverging}
-    \vspace{-1.4\baselineskip}
-    \caption{\blueorange colormap.}
-    \label{fig:design:blueorange}
-  \end{subfigure}\\[4pt]
-  \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{map-fast}
-    \vspace{-1.4\baselineskip}
-    \caption{Final \fast colormap.}
-    \label{fig:design:fast}
-  \end{subfigure}
-  \caption{
-    Transition of the default ParaView color map from the original (top) variations designed to improve discriminatory power to the new default (bottom) colormap.
-  }
-  \label{fig:designs}
-\end{figure}
+\begin{figure*}[b]
+\centering
+\includegraphics[width=\textwidth]{Final_Pics/HSVV.png}
+\caption{This set of visualizations illustrates the impacts on \coolwarm when the value, saturation and hue are extended to their full range. Left: \coolwarm, \coolwarm with the luminance extended to black; \coolwarm with the saturation spanning into full saturation at the ends of the coolormap; hue, spanning through cool and warm colors with the same luminance and saturation values as \coolwarm; and \fast which balances luminance, saturation and hue ranges in order to best meet the colormap criteria.}
+
+\label{fig:contrast}
+\end{figure*}
 
 \section{CRITERIA}
 
@@ -174,7 +152,8 @@ There are many guidelines for colormaps proposed in the literature. We use the c
 
 \end{itemize}
 These critera are not independent improvements as changes in one property could degrade the effectiveness in others.
-The color theory section below details relevant artistic color theory principles which drove the construction of \fast, shown in Figure~\ref{fig:designs}. 
+The color theory section below details relevant artistic color theory principles which drove the construction of \fast.
+%, shown in Figure~\ref{fig:designs}. 
 
 %For example, issues with order, 3D surfaces, or colorblindess are typically resolved by limiting the colors used, but reducing the number of colors lowers the discriminative power of the map. Consequently, there is no such thing as the perfect color map. Our default colormap needs to be a jack of all trades even if it is a master at none.
 
@@ -205,17 +184,9 @@ The remaining two are
 \item contrast of extension, which speaks to balance of the area covered by specific hues.
 \end{inparaenum}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{Final_Pics/HSVV.png}
-\caption{This set of visualizations illustrates the impacts on \coolwarm when the value, saturation and hue are extended to their full range. Left: \coolwarm, \coolwarm with the luminance extended to black; \coolwarm with the saturation spanning into full saturation at the ends of the coolormap; hue, spanning through cool and warm colors with the same luminance and saturation values as \coolwarm; and \fast which balances luminance, saturation and hue ranges in order to best meet the colormap criteria.}
+Colormaps translate data, not through the colors themselves, but through the \textit{fig:contrast} between perceivable colors within the colormap. In discrete colormaps it is the contrast between the individual colors that reveals the data. Scalar colormaps are smooth ramps generated by selecting a set of control points and then interpolating between the control points in CIELAB colorspace. The discriminatory power in a colormap relies on the contrast across its entire path through colorspace, which includes both the control points and the colors on the path through color space.
 
-\label{contrast}
-\end{figure*}
-
-Colormaps translate data, not through the colors themselves, but through the \textit{contrast} between perceivable colors within the colormap. In discrete colormaps it is the contrast between the individual colors that reveals the data. Scalar colormaps are smooth ramps generated by selecting a set of control points and then interpolating between the control points in CIELAB colorspace. The discriminatory power in a colormap relies on the contrast across its entire path through colorspace, which includes both the control points and the colors on the path through color space.
-
-Figure~\ref{contrast} illustrates three types of color contrast as applied to data from a simulation of bow waves in Ganymede's magnetosphere.
+Figure~\ref{fig:contrast} illustrates three types of color contrast as applied to data from a simulation of bow waves in Ganymede's magnetosphere.
 %The data range is clipped to concentrate the contrast in the bow waves, which is the area of interest.
 %The figure contains three diverging colormaps to illustrate specific types of contrast: luminance, saturation, and hue.
 The figure takes the \coolwarm colormap and dramatically increases the luminance contrast, saturation contrast, and hue contrast, respectively.
@@ -224,7 +195,7 @@ The figure takes the \coolwarm colormap and dramatically increases the luminance
 %The luminance alone provides clear differentiation of the large features but does not capture the nuance shown in the saturation contrast example.
 Each increase in contrast demonstrates greater detail than the original \coolwarm it comes from.
 However, having such dramatic contrast can interfere with other elements of a display such as shading, background, and labeling.
-Figure~\ref{contrast} shows at right how the \fast colormap combines more subtle versions of all these types of contrast to achieve the same improvement without dominating color features.
+Figure~\ref{fig:contrast} shows at right how the \fast colormap combines more subtle versions of all these types of contrast to achieve the same improvement without dominating color features.
 
 %\km{I am thoroughly confused by this description. The description in the text does not match the description in the caption. Is this meant to say that the first image shows hue contrast, the second saturation contrast, etc.? If so, how is the left image not also showing, say, cool-warm contrast? Why is the third image (luminance contrast?) two solid colors but the others gradients?}
 
@@ -256,7 +227,7 @@ Creating custom colormaps requires time and color expertise. Even scientists who
 %\fs{Yes, it is confusing. In my community hue refers  hue as you describe it but is also how we speak of individual colors, especially ones that are nuanced and without a specific name. I changed hue to colors and tried to clarify. If you have another suggestion, let me know.}
 
 
-\begin{figure}
+\begin{figure}[ht]
 \includegraphics[width=\linewidth]{pics/Ware17.png}
 \caption{This chart by Ware et al. \cite{Ware2017} illustrates the discriminatory at points across the colormap. The abbreviations, left to right: RA - \huewheel; CW - \coolwarm; ECW - \extendedcoolwarm; BOD = \blueorange; VI - \colormap{Viridis}; G2 - \colormap{Perceptual Grayscale}; GL - \colormap{Linear Grayscale}. }
 \label{fig:ware}
@@ -290,6 +261,40 @@ Future work includes addressing this trade-off by an automating the rescaling on
 
 
 \section{CONSTRUCTING A NEW DEFAULT}
+
+
+\begin{figure}[ht]
+  \begin{subfigure}{\linewidth}
+    \includegraphics[width=\linewidth]{map-cool-to-warm}
+    \vspace{-1.4\baselineskip}
+    \caption{Original \coolwarm coolwarm.}
+    \label{fig:design:coolwarm}
+  \end{subfigure}\\[4pt]
+  \begin{subfigure}{\linewidth}
+    \includegraphics[width=\linewidth]{Final_Pics/CW_extended.png}
+    \vspace{-1.4\baselineskip}
+    \caption{\extendedcoolwarm colormap.}
+    \label{fig:design:cw est}
+  \end{subfigure}\\[4pt]
+  \begin{subfigure}{\linewidth}
+    \includegraphics[width=\linewidth]{map-blue-orange-diverging}
+    \vspace{-1.4\baselineskip}
+    \caption{\blueorange colormap.}
+    \label{fig:design:blueorange}
+  \end{subfigure}\\[4pt]
+  \begin{subfigure}{\linewidth}
+    \includegraphics[width=\linewidth]{map-fast}
+    \vspace{-1.4\baselineskip}
+    \caption{Final \fast colormap.}
+    \label{fig:design:fast}
+  \end{subfigure}
+  \caption{
+    Transition of the default ParaView color map from the original (top) variations designed to improve discriminatory power to the new default (bottom) colormap.
+  }
+  \label{fig:designs}
+\end{figure}
+
+
 The origins of the new default color map arise from a collaboration between climate scientists, visualization experts, and visual artists~\cite{Samsel2015}.
 The team found that the existing default colors do not reveal enough detail within the high-resolution data they use.
 This collaboration engendered the \blueorange colormap (Figure~\ref{fig:design:blueorange}), which better satisfies the needs of the climate scientists~\cite{Samsel2015:SC}.
