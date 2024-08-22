@@ -3406,8 +3406,8 @@ between column types.}%
         \global\@topnum\z@ \twocolumn[\@maketitle]%%\@IEEEstatictitlevskip\@IEEEaftertitletext%
 %%     \fi
      \thanks{\parindent0pt%
-            \hspace*{-8pt}XXXX-XXX \copyright\ \@pubyear\ IEEE\endgraf
-            Digital Object Identifier 10.1109/XXX.0000.0000000
+            \hspace*{-8pt}0272-1716 \copyright\ \@pubyear\ IEEE\endgraf
+            Digital Object Identifier 10.1109/MCG.2024.3383137
            }
      \thispagestyle{plain}\@thanks%{IEEEtitlepagestyle}\@thanks%
 %%  \fi
@@ -4001,7 +4001,7 @@ between column types.}%
 \pagenumbering{arabic}
 
 % normally the page counter starts at 1
-\setcounter{page}{1}
+\setcounter{page}{150}
 % however, for peerreview the cover sheet is page 0 or page -1
 % (for duplex printing)
 \ifCLASSOPTIONpeerreview
